@@ -1,23 +1,37 @@
 const mongoose = require("mongoose")
-const Schema = mongoose.Schema;
 
-//const Items = require("../item.model")
-const User = require("../user.model")
+const Item = require("../entities/item")
+const User = require("../entities/user")
+const PackagingType = require("../entities/packagingType")
+const Client = require("../entities/client")
 const StatusType = require("../enums/StatusType")
 const DeliveryType = require("../enums/DeliveryType")
-const PackagingType = require("../packagingtype.model")
 
-const orderSchema = new Schema({
-    items: [Items],
-    user: {type: User, require: true},
-    assignedEmployees: [User],
-    total: {type: Number, require: true},
-    status: {type: StatusType, default: StatusType.REVISION, require: true},
-    date: {type: Date, requier: true},
-    delivery: {type: DeliveryType, default: DeliveryType.STORE_PICK_UP, require: true},
-    client: {type: Client, require: true},
+const orderSchema = new mongoose.Schema({
+    items: {type: [Item.schema], required: true},
+    user: {type: mongoose.Types.ObjectId(User), required: true},
+    assignedEmployees: {type: [User.schema], required: true},
+    total: {type: Number, required: true},
+    status: {   
+                type: String,
+                enum: Object.values(StatusType), 
+                default: StatusType.REVISION, 
+                required: true
+            },
+    date: {type: Date, required: true},
+    delivery: {
+                type: String, 
+                enum: Object.values(DeliveryType),
+                default: DeliveryType.STORE_PICK_UP, 
+                required: true
+            },
+    client: {type: Client.schema, required: true},
     remarks: {type: String},
-    packaging: [PackagingType]
+    packaging: {
+                    type: [PackagingType.schema], 
+                    required: true,
+                    default: () => [ new PackagingType() ]
+            }
 })
 
 module.exports = mongoose.model("Order", orderSchema)

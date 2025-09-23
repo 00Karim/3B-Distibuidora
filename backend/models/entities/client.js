@@ -1,12 +1,12 @@
 const mongoose = require("mongoose")
-const addressSchema = require("./address")
+const Address = require("./address")
 
 const clientSchema = new mongoose.Schema({
-    name: {type: String, require: true},
-    whatsapp: {type: String, require:true},
-    email: {type: String, require: true},
-    dni: {type: Number, require: true},
-    adress: {type: addressSchema, require: true}
+    name: {type: String, required: true},
+    whatsapp: {type: String, required:true},
+    email: {type: String, required: true},
+    dni: {type: Number, required: true},
+    adress: {type: Address.schema, required: true}
 })
 
 module.exports = mongoose.model("Client", clientSchema)
