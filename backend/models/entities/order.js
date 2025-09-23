@@ -1,9 +1,9 @@
 const mongoose = require("mongoose")
 
-const Item = require("../entities/item")
-const User = require("../entities/user")
-const PackagingType = require("../entities/packagingType")
-const Client = require("../entities/client")
+const Item = require("./item")
+const User = require("./user")
+const PackagingType = require("./packagingType")
+const Client = require("./client")
 const StatusType = require("../enums/StatusType")
 const DeliveryType = require("../enums/DeliveryType")
 
