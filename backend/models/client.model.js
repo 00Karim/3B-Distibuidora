@@ -1,11 +1,11 @@
-const mongoose = require("mongoose")
+class clientEntity {
+    constructor(name, whatsapp, email, dni, adress){
+        this.name = name,
+        this.whatsapp = whatsapp,
+        this.email = email,
+        this.dni = dni,
+        this.adress = adress
+    }
+}
 
-const clientSchema = new mongoose.Schema({
-    name: {type: string, require: true},
-    whatsapp: {type: string, require:true},
-    email: {type: string, require: true},
-    dni: {type: number, require: true},
-    adress: adressSchema
-})
-
-module.exports = mongoose.model("Client", clientSchema)
+module.exports = clientEntity;
