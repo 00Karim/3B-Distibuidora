@@ -13,3 +13,60 @@ Los empleados pueden ver los pedidos, pueden cambiar el estado de los pedidos de
 
 ##### DESCRIPCIÓN ESTRUCTURAL
 El software va a estar compuesto por un backend desarrollado en Node.js con JavaScript, una base de datos en MongoDB, una API para acceder a la BDD con Express, un frontend en React, testing hecho con Jest y va a estar alojado en Render
+
+##### DESCRIPCION BDD
+En total, vamos a trabajar con 8 entidades. Order, User, Client, Address, PackagingType, Item, Product y Category.
+
+<ins>Order</ins>
+
+Order va a ser la entidad más importante de la base de datos.
+En ella se unifica la información de las demás entidades para representar el pedido de un cliente.
+Contiene datos sobre los ítems solicitados, el usuario que lo gestionó, el cliente, el estado del pedido, la forma de entrega, los empleados asignados, la fecha de creación y entrega, y la forma de empaquetado.
+
+<ins>User</ins>
+
+User representa a los empleados o administradores que interactúan con el sistema.
+Guarda información personal y de autenticación como email, contraseña, nombre, además de su rol (admin o empleado) y la fecha de creación de la cuenta.
+Es fundamental para la gestión interna de los pedidos.
+
+<ins>Client</ins>
+
+Client almacena la información de los clientes que realizan pedidos.
+Incluye datos de contacto como nombre, número de WhatsApp, email, DNI y su dirección.
+Está relacionado con Order, ya que cada pedido pertenece a un cliente.
+
+<ins>Address</ins>
+
+Address detalla la dirección física de un cliente.
+Incluye datos como calle, número, ciudad, provincia/estado y código postal.
+Se utiliza para poder realizar envíos a domicilio o validar la ubicación en métodos de entrega específicos.
+
+<ins>Product</ins>
+
+Product representa cada uno de los productos ofrecidos en la distribuidora.
+Contiene datos como nombre, precio, imagen, descripción, stock, marca, categoría, unidad de medida y si es aptos sin gluten.
+Es la base de los ítems que componen un pedido.
+
+<ins>Category</ins>
+
+Category organiza los productos en grupos y subgrupos.
+Cada categoría tiene un nombre y puede contener subcategorías.
+Facilita la navegación y clasificación de los productos en el sistema.
+
+<ins>Item</ins>
+
+Item representa un producto concreto dentro de un pedido.
+Incluye información como el producto asociado, nombre, cantidad, precio por unidad, precio total, peso, disponibilidad y observaciones.
+Es la forma en que los productos se agregan a una orden de compra.
+
+<ins>PackagingType</ins>
+
+PackagingType especifica el tipo de empaque en el que se entregan los productos.
+Puede ser bolsa, caja o directamente el empaque de fábrica, por ejemplo una bolsa entera de harina.
+Cada packaging incluye el tipo y la cantidad utilizada en una orden
+
+
+
+##### DIAGRAMA DE LA BASE DE DATOS
+!["Diagrama BDD"](./assets/3B%20Database%20.jpeg)
+
