@@ -1,0 +1,23 @@
+import express from "express"
+import cors from "cors"
+import { connectDB } from "./server.js"
+
+connectDB()
+
+const router = express.Router()
+const app = express()
+
+app.use(express.json()) // parsea el json para que sea legible y lo convierte en el objeto req.body
+
+app.use("/api", router);
+
+const PORT = process.env.PORT || 4000
+app.listen(PORT, () => console.log(`Server corriendo en http://localhost:${PORT}`))
+// Users
+// app.use("/users/api/products", cors({ origin: "http://localhost:3000", methods: ["GET"] }));
+
+// Employees
+// app.use("/employees/api/products", cors({ origin: "http://localhost:3000", methods: ["GET"] }));
+
+// Admins
+// app.use("/admins/api/products", cors({ origin: "http://localhost:3000", methods: ["GET", "POST", "DELETE", "PUT"] }));
