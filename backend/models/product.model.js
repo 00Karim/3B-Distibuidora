@@ -2,6 +2,8 @@ const mongoose = require("mongoose")
 const Product = require("../models/entities/product")
 
 class productModel {
+    // vamos a hacer todos los metodos estaticos porque vamos a usar los metodos para hacer
+    // operaciones sobre la base de datos y no sobre objetos instanciados con esta clase
     static getAllProducts = async(filters = {}) =>{
         const query = {}
         try{
@@ -73,7 +75,7 @@ class productModel {
                 productId,
                 updateData,
                 {new: true, runValidators: true}
-            ).popualte('category')
+            ).populate('category')
 
             return updatedProduct
         }catch(e){
