@@ -4,7 +4,7 @@ const Category = require("../models/entities/category")
 class CategoryModel{
     static getAllCategories = async() => {
         try{
-            categories = await Category.find()
+            const categories = await Category.find()
 
             return categories
         }catch(e){
@@ -42,7 +42,7 @@ class CategoryModel{
                 throw new Error("Error, el ID no es valido")
             }
             
-            category = await Category.findByIdAndUpdate(
+            const category = await Category.findByIdAndUpdate(
                 idCategory,
                 categoryData,
                 {new: true, runValidators: true}
