@@ -1,4 +1,4 @@
-const PackageType = require("../models/entities/packagingType")
+const PackagingType = require("../models/entities/packagingType")
 
 class packagingModel {
     static getPackagingType = async(packagingTypeId) => {

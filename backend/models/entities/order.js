@@ -25,7 +25,7 @@ const orderSchema = new mongoose.Schema({
                 default: DeliveryType.STORE_PICK_UP, 
                 required: true
             },
-    client: {type: Client.schema, required: true},
+    client: {type: mongoose.Schema.Types.ObjectId, ref: 'Client', required: true},
     remarks: {type: String},
     packaging: {
                     type: [PackagingType.schema], 
