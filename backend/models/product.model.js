@@ -47,7 +47,7 @@ class productModel {
                 throw new Error(`Error, Id invalido`)
             }
 
-            const product = await Product.findById(productId).popualte('category')
+            const product = await Product.findById(productId).populate('category')
             
             return product
         }catch(e){
@@ -85,7 +85,7 @@ class productModel {
 
     static deleteProduct = async(productId) => {
         try{
-            if(!mongoose.ObjectId.Types.isValid(productId)){
+            if(!mongoose.Types.ObjectId.isValid(productId)){
                 throw new Error("Error, el ID no es valido")
             }
 
@@ -104,11 +104,11 @@ class productModel {
             }
             //Se chequea que el numero de stock a editar no haga que el stock total sea menos a 0
             //Se puede tanto sumar como restar stock
-            if((productId.stock + newStock) < 0){
+            const product = await Product.findById(productId)
+            if((product.stock + newStock) < 0){
                 throw new Error("Error, el stock no puede ser menor a 0")
             }
 
-            const product = await Product.findById('productId')
             product.stock += newStock
             await product.save()
 
