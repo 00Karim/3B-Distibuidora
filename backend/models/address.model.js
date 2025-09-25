@@ -16,7 +16,7 @@ class AddressModel {
     static createAdress = async(adressData) => {
         try{    
             const newAdress = new Adress(adressData)
-            newAdress.save()
+            await newAdress.save()
             return newAdress
         }catch(e){
             throw new Error(`Error, no se pudo crear el adress indicado, ${e}`)

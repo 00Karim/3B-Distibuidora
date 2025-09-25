@@ -28,7 +28,7 @@ class UserModel {
                     throw new Error(`Error, el ID ingresado no es valido ${e}`)
 
                 const newUser = new User(userData)
-                newUser.save()
+                await newUser.save()
 
                 return newUser
             }catch(e){
