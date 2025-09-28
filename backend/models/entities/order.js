@@ -9,7 +9,7 @@ const DeliveryType = require("../enums/DeliveryType")
 
 const orderSchema = new mongoose.Schema({
     items: {type: [Item.schema], required: true},
-    user: {type: mongoose.Types.ObjectId(User), required: true},
+    user: {type: mongoose.Types.ObjectId(User), ref: 'User', required: true},
     assignedEmployees: {type: [User.schema], required: true},
     total: {type: Number, required: true},
     status: {   

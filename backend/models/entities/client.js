@@ -6,7 +6,7 @@ const clientSchema = new mongoose.Schema({
     whatsapp: {type: String, required:true},
     email: {type: String, required: true},
     dni: {type: Number, required: true},
-    adress: {type: Address.schema, required: true}
+    address: {type: Address.schema, required: true}
 })
 
 module.exports = mongoose.model("Client", clientSchema)

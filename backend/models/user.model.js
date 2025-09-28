@@ -36,23 +36,23 @@ class UserModel {
             }
         }
 
-        static updateUser = async(userId, userData) => {
-            try{
-                if(!mongoose.Types.ObjectId.isValid(userId))
-                    throw new Error(`Error, el ID ingresado no es valido ${e}`)
+        // static updateUser = async(userId, userData) => {
+        //     try{
+        //         if(!mongoose.Types.ObjectId.isValid(userId))
+        //             throw new Error(`Error, el ID ingresado no es valido ${e}`)
 
-                const updatedUser = await User.findByIdAndUpdate(
-                    userId,
-                    userData,
-                    {new: true, runValidators: true}
-                )
+        //         const updatedUser = await User.findByIdAndUpdate(
+        //             userId,
+        //             userData,
+        //             {new: true, runValidators: true}
+        //         )
 
-                return updatedUser
+        //         return updatedUser
 
-            }catch(e){
-                throw new Error(`Error, no se pudo actualizar el usuario indicado ${e}`)
-            }
-        }
+        //     }catch(e){
+        //         throw new Error(`Error, no se pudo actualizar el usuario indicado ${e}`)
+        //     }
+        // }
 
         static deleteUser = async(userId) => {
             try{

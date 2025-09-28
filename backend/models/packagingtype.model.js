@@ -1,10 +1,12 @@
+const mongoose = require("mongoose")
 const PackagingType = require("../models/entities/packagingType")
 
 class packagingModel {
     static getPackagingType = async(packagingTypeId) => {
         try{
             if(!mongoose.Types.ObjectId.isValid(packagingTypeId))
-                throw new Error(`El id del tipo de packaging es invalido, ${e}`)
+
+                throw new Error('El id del tipo de packaging es invalido')
 
             const packagingType = await PackagingType.findById(packagingTypeId) 
             return packagingType
@@ -26,9 +28,9 @@ class packagingModel {
     static updatePackagingType = async(packagingTypeId, packagingTypeData) => {
         try{
             if(!mongoose.Types.ObjectId.isValid(packagingTypeId))
-                throw new Error(`El id del tipo de packaging es invalido, ${e}`)
+                throw new Error('El id del tipo de packaging es invalido')
 
-            const newPackagingType = new PackagingType(
+            const newPackagingType = PackagingType.findByIdAndUpdate(
                 packagingTypeId,
                 packagingTypeData,
                 {new: true, runValidators: true}
