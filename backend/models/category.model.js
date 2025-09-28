@@ -1,5 +1,5 @@
 const mongoose = require("mongoose")
-const Category = require("../models/entities/category")
+const Category = require("./entities/category")
 
 class CategoryModel{
     static getAllCategories = async() => {
@@ -17,19 +17,19 @@ class CategoryModel{
             if(!mongoose.Types.ObjectId.isValid(categoryId)){
                 throw new Error("Error, el ID no es valido")
             }
-
+            console.log(categoryId)
+            categoryId = categoryId.toString()
             const category = await Category.findById(categoryId)
-
             return category
         }catch(e){
-            throw new Error(`Error, no se pudo obtener la categoria indicada por ID`)
+            throw new Error(`Error, no se pudo obtener la categoria indicada por ID: ${e.message}`)
         }
     }
 
     static createCategory = async(categoryData) => {
         try{
             const category = new Category(categoryData)
-            category.save()
+            await category.save()
             return category
         }catch(e){
             throw new Error(`Error, no se pudo crear una nueva categoria`)

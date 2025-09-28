@@ -1,4 +1,4 @@
-import mongoose from "mongoose"
+const mongoose = require("mongoose")
 const { MongoMemoryServer } = require("mongodb-memory-server") // nos permite crear un server temporal de mongodb en memoria
 
 // este archivo sirve para minimizar el codigo que se usa en las test
