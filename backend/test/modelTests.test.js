@@ -11,6 +11,7 @@ const { describe, it, expect, beforeAll, afterAll, afterEach } = require("@jest/
 //IMPORTACION DE LOS MODELOS A PROBAR:
 const ProductModel = require("../models/product.model")
 const CategoryModel = require("../models/category.model")
+const AddressModel = require("../models/address.model")
 
 let executeClearTest = false // usamos esta variable para decidir cuando queremos que se borren los datos de la bdd en memoria
 // poruqe por ejemplo, si creamos una entidad y luego queremos usarla, eso no seria posible si dejamos que afterEach funcione
@@ -113,11 +114,42 @@ describe("Pruebas de integracion con BDD del modelo de mongoose de Category ", (
             {name: "Harinas"} 
         )
         expect(updatedCategory.name).toBe("Harinas")
-        deleteAndDisconnect()
     })
     // it("Chequea si se borra la categoria creada anteriormente", async () => {
     //     await CategoryModel.deleteCategory(idProduct)
     //     const deletedProduct = await ProductModel.getProductById(idProduct)
     //     expect(deletedProduct).toBeNull()
     // })
+})
+
+describe("Pruebas de integracion con BDD del modelo de mongoose Address", () => {
+    let idAddress = "" // declaramos la variable idAddress para poder usarla mas adelante en las otras pruebas que lo necesiten 
+    it("Chequea si se puede crear una categoria", async () => {
+        const address = {
+            street: "Av. Libertador",
+            number: "1234",
+            city: "Buenos Aires",
+            state: "CABA",
+            postalCode: 1425
+        };
+        const newAddress = await AddressModel.createAddress(address)
+        idAddress = newAddress._id // le asignamos el id de la address creada recientemente a la variable idAddress para usar en las otras operaciones
+        expect(newAddress._id).toBeDefined() // si el id de la address no esta definido entonces directamente no existe por lo que salio mal la prueba
+        expect(newAddress.street).toBe("Av. Libertador")
+        expect(newAddress.postalCode).toBe(1425)  
+    })
+    it("Chequea si funciona un get de la category creada anteriormente", async () => {
+        const foundCategory = await AddressModel.getAddress(idAddress)
+        expect(foundCategory._id).toBeDefined()
+        expect(foundCategory.name).toBe("Frutos Secos")
+        expect(foundCategory.subcategories[1].name).toBeDefined()
+    })
+    it("Chequea si se modifica la categoria creada anteriormente", async () => {
+        const updatedCategory = await CategoryModel.updateCategory(
+            idAddress, 
+            {name: "Harinas"} 
+        )
+        expect(updatedCategory.name).toBe("Harinas")
+        deleteAndDisconnect()
+    })
 })
