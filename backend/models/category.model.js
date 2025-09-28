@@ -17,7 +17,6 @@ class CategoryModel{
             if(!mongoose.Types.ObjectId.isValid(categoryId)){
                 throw new Error("Error, el ID no es valido")
             }
-            console.log(categoryId)
             categoryId = categoryId.toString()
             const category = await Category.findById(categoryId)
             return category
