@@ -8,12 +8,16 @@ const { describe, it, expect, beforeAll, afterAll, afterEach } = require("@jest/
 // afterAll, despues de todas las pruebas
 // afterEach, despues de cada prueba singular
 
+//IMPORTACION DE LAS ENTIDADES NECESARIAS
+const Product = require("../models/entities/product") // importo Product para poder asignar un producto al atributo product de item 
+
 //IMPORTACION DE LOS MODELOS A PROBAR:
 const ProductModel = require("../models/product.model")
 const CategoryModel = require("../models/category.model")
 const AddressModel = require("../models/address.model")
 const PackageTypeModel = require("../models/packagingtype.model")
 const ClientModel = require("../models/client.model")
+const ItemModel = require("../models/item.model")
 
 //IMPORTACION DE LOS ENUMS
 const PackageType = require("../models/enums/PackageType")
@@ -26,6 +30,7 @@ let idCategory = ""
 let idClient = ""
 let idPackagingType = ""
 let idProduct = ""
+let idItem = ""
 
 let executeClearTest = false // usamos esta variable para decidir cuando queremos que se borren los datos de la bdd en memoria
 // poruqe por ejemplo, si creamos una entidad y luego queremos usarla, eso no seria posible si dejamos que afterEach funcione
@@ -52,48 +57,6 @@ afterEach( async () => {
     }
 })
 
-describe("Pruebas de integracion con BDD del modelo de mongoose de Product ", () => {
-    it("Chequea si se puede crear un producto", async () => {
-        const product = {
-            name: "Almendras",
-            price: 12000,
-            image: "./img/almendras.jpg",
-            description: "Viaje a visitar pacificamente la Patagonia",
-            category: {
-                _id: new mongoose.Types.ObjectId("652f3c9d9f1b146f8d8a1234"), // simula un id real aunque no exista en la bdd
-                name: "Frutos Secos"
-            },
-            unitOfMeasure: "kg",
-            stock: 100,
-            glutenFree: false,
-            brand: "Patagonia"
-        };
-        const newProduct = await ProductModel.createProduct(product)
-        idProduct = newProduct._id // le asignamos el id del producto creado recientemente a la variable idProduct para usar en las otras operaciones
-        expect(newProduct._id).toBeDefined() // si el id del producto no esta definido entonces directamente no existe por lo que salio mal la prueba
-        expect(newProduct.name).toBe("Almendras")
-        expect(newProduct.price).toBe(12000)
-        expect(newProduct.category._id).toBeDefined()  
-    })
-    it("Chequea si se funciona un get del producto creado anteriormente", async () => {
-        const foundProduct = await ProductModel.getProductById(idProduct)
-        expect(foundProduct._id).toBeDefined()
-        expect(foundProduct.name).toBe("Almendras")
-        expect(foundProduct.category).toBeDefined()
-    })
-    it("Chequea si se modifica el producto creado anteriormente", async () => {
-        const updatedProduct = await ProductModel.updateProduct(
-            idProduct, 
-            {name: "Chocolate"} 
-        )
-        expect(updatedProduct.name).toBe("Chocolate")
-        })
-    it("Chequea si se borra el producto creado anteriormente", async () => {
-        await ProductModel.deleteProduct(idProduct)
-        const deletedProduct = await ProductModel.getProductById(idProduct)
-        expect(deletedProduct).toBeNull()
-    })
-})
 // --PRUEBAS CATEGORY--
 describe("Pruebas de integracion con BDD del modelo de mongoose de Category ", () => {
     it("Chequea si se puede crear una categoria", async () => {
@@ -133,9 +96,53 @@ describe("Pruebas de integracion con BDD del modelo de mongoose de Category ", (
     //     expect(deletedProduct).toBeNull()
     // })
 })
+
+// --PRUEBAS DE PRODUCT--
+describe("Pruebas de integracion con BDD del modelo de mongoose de Product ", () => {
+    let product = {} // lo declaramos antes para poder usarlo en todas las pruebas
+    it("Chequea si se puede crear un producto", async () => {
+        product = {
+            name: "Almendras",
+            price: 12000,
+            image: "./img/almendras.jpg",
+            description: "Viaje a visitar pacificamente la Patagonia",
+            category: idCategory,
+            unitOfMeasure: "kg",
+            stock: 100,
+            glutenFree: false,
+            brand: "Patagonia"
+        };
+        const newProduct = await ProductModel.createProduct(product)
+        console.log("PRODUCTO CREADO EN PRUEBAS PRODUCTO: ", newProduct)
+        idProduct = newProduct._id // le asignamos el id del producto creado recientemente a la variable idProduct para usar en las otras operaciones
+        expect(newProduct._id).toBeDefined() // si el id del producto no esta definido entonces directamente no existe por lo que salio mal la prueba
+        expect(newProduct.name).toBe("Almendras")
+        expect(newProduct.price).toBe(12000)
+        expect(newProduct.category._id).toBeDefined()  
+    })
+    it("Chequea si se funciona un get del producto creado anteriormente", async () => {
+        const foundProduct = await ProductModel.getProductById(idProduct)
+        expect(foundProduct._id).toBeDefined()
+        expect(foundProduct.name).toBe("Almendras")
+        expect(foundProduct.category).toBeDefined()
+    })
+    it("Chequea si se modifica el producto creado anteriormente", async () => {
+        const updatedProduct = await ProductModel.updateProduct(
+            idProduct, 
+            {name: "Chocolate"} 
+        )
+        expect(updatedProduct.name).toBe("Chocolate")
+        })
+    it("Chequea si se borra el producto creado anteriormente", async () => {
+        await ProductModel.deleteProduct(idProduct)
+        const deletedProduct = await ProductModel.getProductById(idProduct)
+        expect(deletedProduct).toBeNull()
+        idProduct = (await ProductModel.createProduct(product))._id // creamos el objeto de nuevo para poder usarlo en otras operaciones mas adelante 
+    })
+})
 // --PRUEBAS ADDRESS--
 describe("Pruebas de integracion con BDD del modelo de mongoose Address", () => {
-    it("Chequea si se puede crear una categoria", async () => {
+    it("Chequea si se puede crear una adress", async () => {
         const address = {
             street: "Av. Libertador",
             number: "1234",
@@ -187,9 +194,9 @@ describe("Pruebas de integracion con BDD del modelo de mongoose de PackagingType
 // --PRUEBAS CLIENT--
 describe("Pruebas de integracion con BDD del modelo de mongoose de Client ", () => {
     let address = {} // address que vamos a usar como documento embebido dentro del client --> la definimos aca porque
-    // hay dos tests que necesitan acceder a ella por lo que es necesario que este en el scope de todas las pruebas
+    // hay dos tests que necesitan acceder a ella por lo que es necesario que este en el scope de todas las pruebas,
+    // ademas al definirlo antes logramos que no se convierta en un documento de mongoose con toda su metadata
     it("Chequea si se puede crear un Cliente", async () => {
-        console.log(idAddress)
         address = await AddressModel.getAddress(idAddress);
 
         const client = {
@@ -201,7 +208,6 @@ describe("Pruebas de integracion con BDD del modelo de mongoose de Client ", () 
         };
 
         const newClient = await ClientModel.createClient(client)
-        console.log(newClient)
         idClient = newClient._id // le asignamos el id del Client creado recientemente a la variable idClient para usar en las otras operaciones
         expect(newClient._id).toBeDefined() // si el id del Client no esta definido entonces directamente no existe por lo que salio mal la prueba
         expect(newClient.email).toBe("juanperez@example.com")
@@ -212,6 +218,48 @@ describe("Pruebas de integracion con BDD del modelo de mongoose de Client ", () 
         expect(foundClient._id).toBeDefined()
         expect(foundClient.email).toBe("juanperez@example.com")
         expect(foundClient.address.street).toBe("Av. Libertador")
-        deleteAndDisconnect()
+    })
+})
+
+// --PRUEBAS ITEM--
+describe("Pruebas de integracion con BDD del modelo de mongoose Item ", () => {
+    let product = {}
+    it("Chequea si se puede crear un Item", async () => {
+        product = await ProductModel.getProductById(idProduct) // geteamos el prduct creado antes para asignarselo al atributo product como documento embebido
+        console.log("PRODUCTO CREADO EN PRUEBAS ITEM: ", product)
+        const item = {
+            "product": product,
+            "pricePerUnit": 1200,
+            "totalPrice": 2400,
+            "amount": 2,
+            "weight": 2,
+            "isAvailable": true,
+            "remarks": "Entrega en 24hs"
+        }
+        console.log("ITEM JSON EN JS: ", item)
+        const newItem = await ItemModel.createItem(item)
+        idItem = newItem._id // le asignamos el id del packagigntype creada recientemente a la variable idPackagingType para usar en las otras operaciones
+        expect(newItem._id).toBeDefined() // si el id de el packagignType no esta definido entonces directamente no existe por lo que salio mal la prueba
+        expect(newItem.pricePerUnit).toBe(1200)
+        expect(newItem.amount).toBe(2)
+        expect(newItem.remarks).toBe("Entrega en 24hs")  
+    })
+    it("Chequea si funciona un get del item creado anteriormente", async () => {
+        const foundItem = await ItemModel.getItem(idItem)
+        expect(foundItem._id).toBeDefined()
+        expect(foundItem.pricePerUnit).toBe(1200)
+        expect(foundItem.amount).toBe(2)
+        expect(foundItem.remarks).toBe("Entrega en 24hs")
+        expect(foundItem.product.name).toBe("Almendras")
+    })
+    it("Chequea si se modifica el item creado anteriormente", async () => {
+        const updatedItem = await ItemModel.updateItem(
+            idItem, 
+            {isAvailable: false, totalPrice: 9999} 
+        )
+        console.log(updatedItem)
+        expect(updatedItem.isAvailable).toBe(false)
+        expect(updatedItem.totalPrice).toBe(9999)
+        expect(updatedItem.product.category).toBeDefined()
     })
 })

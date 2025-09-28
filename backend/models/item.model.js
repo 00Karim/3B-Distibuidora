@@ -1,6 +1,7 @@
+const mongoose = require("mongoose")
 const Item = require("../models/entities/item")
 
-class Item {
+class ItemModel {
     static getAllItems = async() => {
         try{
             const items = await Item.find()
@@ -16,8 +17,7 @@ class Item {
             if(!mongoose.Types.ObjectId.isValid(itemId)){
                 throw new Error(`Error, el ID del item es invalido`)
             }
-
-            const item = await Item.findById(itemId).populate('product')
+            const item = await Item.findById(itemId)
             return item
         }catch(e){
             throw new Error(`Error, no se pudo obtener el item, ${e}`)
@@ -54,4 +54,4 @@ class Item {
     }
 }
 
-module.exports = Item
+module.exports = ItemModel

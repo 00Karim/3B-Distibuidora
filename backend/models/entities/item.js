@@ -2,13 +2,13 @@ const mongoose = require("mongoose")
 const Product = require("./product")
 
 const itemSchema = new mongoose.Schema({
-    product: {type: Product.schema, require: true},
-    pricePerUnit: {type: Number, min: 1, require: true},
-    totalPrice: {type: Number, min: 0, require: true},
+    product: {type: Product.schema, required: true},
+    pricePerUnit: {type: Number, min: 1, required: true},
+    totalPrice: {type: Number, min: 0, required: true},
     amount: {type: Number, default: 1, min: 1},
     weight: {type: Number, min: 0},
-    isAvailable: {type: Boolean, require: true},
+    isAvailable: {type: Boolean, required: true},
     remarks: {type: String}
 })
 
-module.exports = ("Item", itemSchema)
+module.exports = mongoose.model("Item", itemSchema)
