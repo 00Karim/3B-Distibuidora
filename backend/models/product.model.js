@@ -46,7 +46,7 @@ class productModel {
             if(!mongoose.Types.ObjectId.isValid(productId))
                 throw new Error(`Error, Id del producto invalido`)
 
-            const product = await Product.findById(productId).popualte('category')
+            const product = await Product.findById(productId).populate('category')
             
             return product
         }catch(e){
@@ -66,7 +66,7 @@ class productModel {
 
     static updateProduct = async(productId, updateData) => {
         try{
-            if(!mongoose.Types.objectId.isValid(productId)){
+            if(!mongoose.Types.ObjectId.isValid(productId)){
                 throw new Error("El ID del producto a editar es invalido")
             }
 
@@ -84,7 +84,7 @@ class productModel {
 
     static deleteProduct = async(productId) => {
         try{
-            if(!mongoose.ObjectId.Types.isValid(productId)){
+            if(!mongoose.Types.ObjectId.isValid(productId)){
                 throw new Error("Error, el ID no es valido")
             }
 
