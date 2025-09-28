@@ -1,12 +1,13 @@
+const mongoose = require("mongoose")
 const Client = require("../models/entities/client")
 
 class clientModel {
     static getClient = async(clientId) => {
         try{
             if(!mongoose.Types.ObjectId.isValid(clientId))
-                throw new Error(`Error, el ID ingresado no es valido ${e}`)
+                throw new Error('Error, el ID ingresado no es valido')
 
-            const client = await Client.findById(clientId).populate('adress')
+            const client = await Client.findById(clientId)
 
             return client
         }catch(e){
@@ -16,7 +17,7 @@ class clientModel {
 
     static createClient = async(clientData) => {
         try{
-            newClient = new Client(clientData)
+            const newClient = new Client(clientData)
             await newClient.save()
 
             return newClient

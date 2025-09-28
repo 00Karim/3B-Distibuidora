@@ -1,23 +1,24 @@
-const Adress = require("../models/entities/address")
+const mongoose = require("mongoose")
+const Address = require("../models/entities/address")
 
 class AddressModel {
-    static getAdress = async(adressId) => {
+    static getAddress = async(addressId) => {
         try{
-            if(!mongoose.Types.objectId.isValid(adressId))
+            if(!mongoose.Types.ObjectId.isValid(addressId))
                 throw new Error(`Error, el ID del adress es invalido, ${e}`)
 
-            const adress = await Adress.findById(adressId)
-            return adress
+            const address = await Address.findById(addressId)
+            return address
         }catch(e){
             throw new Error(`Error, no se pudo obtener el adress indicado, ${e}`)
         }
     }    
 
-    static createAdress = async(adressData) => {
+    static createAddress = async(adressData) => {
         try{    
-            const newAdress = new Adress(adressData)
-            await newAdress.save()
-            return newAdress
+            const newAddress = new Address(adressData)
+            await newAddress.save()
+            return newAddress
         }catch(e){
             throw new Error(`Error, no se pudo crear el adress indicado, ${e}`)
         }

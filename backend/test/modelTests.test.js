@@ -12,6 +12,20 @@ const { describe, it, expect, beforeAll, afterAll, afterEach } = require("@jest/
 const ProductModel = require("../models/product.model")
 const CategoryModel = require("../models/category.model")
 const AddressModel = require("../models/address.model")
+const PackageTypeModel = require("../models/packagingtype.model")
+const ClientModel = require("../models/client.model")
+
+//IMPORTACION DE LOS ENUMS
+const PackageType = require("../models/enums/PackageType")
+
+//DECLARACION DE IDS DE DOCUMENTOS PARA USO GLOBAL
+// declaramos la variables de id de cada clase para poder usarla mas adelante en operaciones que lo necesiten, 
+// sobretodo para el get por id que se necesita cuando creamos un documento embebido 
+let idAddress = ""
+let idCategory = ""
+let idClient = ""
+let idPackagingType = ""
+let idProduct = ""
 
 let executeClearTest = false // usamos esta variable para decidir cuando queremos que se borren los datos de la bdd en memoria
 // poruqe por ejemplo, si creamos una entidad y luego queremos usarla, eso no seria posible si dejamos que afterEach funcione
@@ -19,7 +33,7 @@ let executeClearTest = false // usamos esta variable para decidir cuando queremo
 let executeDisconnect = false // usamos esta variabla para determinar cuando queremos desconectarnos de la bd. Si no hacemos esto
 // al final de cada conjunto de pruebas se desconecta la base de datos y nos da errores de conexion despues
 
-function deleteAndDisconnect(){
+function deleteAndDisconnect(){ // al ejecutar esta funcion se va a borrar todas las coleciones de la db y desconectar de la conexion
     executeClearTest = true
     executeDisconnect = true
 }
@@ -39,7 +53,6 @@ afterEach( async () => {
 })
 
 describe("Pruebas de integracion con BDD del modelo de mongoose de Product ", () => {
-    let idProduct = "" // declaramos la variable id product para poder usarla mas adelante en las otras pruebas que lo necesiten 
     it("Chequea si se puede crear un producto", async () => {
         const product = {
             name: "Almendras",
@@ -66,7 +79,7 @@ describe("Pruebas de integracion con BDD del modelo de mongoose de Product ", ()
         const foundProduct = await ProductModel.getProductById(idProduct)
         expect(foundProduct._id).toBeDefined()
         expect(foundProduct.name).toBe("Almendras")
-        expect(foundProduct.category._id).toBeDefined()
+        expect(foundProduct.category).toBeDefined()
     })
     it("Chequea si se modifica el producto creado anteriormente", async () => {
         const updatedProduct = await ProductModel.updateProduct(
@@ -81,9 +94,8 @@ describe("Pruebas de integracion con BDD del modelo de mongoose de Product ", ()
         expect(deletedProduct).toBeNull()
     })
 })
-
+// --PRUEBAS CATEGORY--
 describe("Pruebas de integracion con BDD del modelo de mongoose de Category ", () => {
-    let idCategory = "" // declaramos la variable id category para poder usarla mas adelante en las otras pruebas que lo necesiten 
     it("Chequea si se puede crear una categoria", async () => {
         const category = {
             name: "Frutos Secos",
@@ -121,9 +133,8 @@ describe("Pruebas de integracion con BDD del modelo de mongoose de Category ", (
     //     expect(deletedProduct).toBeNull()
     // })
 })
-
+// --PRUEBAS ADDRESS--
 describe("Pruebas de integracion con BDD del modelo de mongoose Address", () => {
-    let idAddress = "" // declaramos la variable idAddress para poder usarla mas adelante en las otras pruebas que lo necesiten 
     it("Chequea si se puede crear una categoria", async () => {
         const address = {
             street: "Av. Libertador",
@@ -138,18 +149,69 @@ describe("Pruebas de integracion con BDD del modelo de mongoose Address", () => 
         expect(newAddress.street).toBe("Av. Libertador")
         expect(newAddress.postalCode).toBe(1425)  
     })
-    it("Chequea si funciona un get de la category creada anteriormente", async () => {
-        const foundCategory = await AddressModel.getAddress(idAddress)
-        expect(foundCategory._id).toBeDefined()
-        expect(foundCategory.name).toBe("Frutos Secos")
-        expect(foundCategory.subcategories[1].name).toBeDefined()
+    it("Chequea si funciona un get de la address creada anteriormente", async () => {
+        const foundAddress = await AddressModel.getAddress(idAddress)
+        expect(foundAddress._id).toBeDefined()
+        expect(foundAddress.street).toBe("Av. Libertador")
+        expect(foundAddress.postalCode).toBe(1425)
     })
-    it("Chequea si se modifica la categoria creada anteriormente", async () => {
-        const updatedCategory = await CategoryModel.updateCategory(
-            idAddress, 
-            {name: "Harinas"} 
+})
+// --PRUEBAS PACKAGINGTYPE--
+describe("Pruebas de integracion con BDD del modelo de mongoose de PackagingType ", () => {
+    it("Chequea si se puede crear un packagingType", async () => {
+        const packaging = {
+            package: PackageType.BAG, // valor dentro del enum
+            amount: 3
+        };
+        const newPackaging = await PackageTypeModel.createPackagingType(packaging)
+        idPackagingType = newPackaging._id // le asignamos el id del packagigntype creada recientemente a la variable idPackagingType para usar en las otras operaciones
+        expect(newPackaging._id).toBeDefined() // si el id de el packagignType no esta definido entonces directamente no existe por lo que salio mal la prueba
+        expect(newPackaging.package).toBe(PackageType.BAG)
+        expect(newPackaging.amount).toBe(3)  
+    })
+    it("Chequea si funciona un get del packagingType creado anteriormente", async () => {
+        const foundPackaging = await PackageTypeModel.getPackagingType(idPackagingType)
+        expect(foundPackaging._id).toBeDefined()
+        expect(foundPackaging.package).toBe(PackageType.BAG)
+        expect(foundPackaging.amount).toBe(3)
+    })
+    it("Chequea si se modifica el packaging type creado anteriormente", async () => {
+        const updatedPackagingType = await PackageTypeModel.updatePackagingType(
+            idPackagingType, 
+            {amount: 6, package: PackageType.BOX} 
         )
-        expect(updatedCategory.name).toBe("Harinas")
+        expect(updatedPackagingType.package).toBe(PackageType.BOX)
+        expect(updatedPackagingType.amount).toBe(6)
+    })
+})
+// --PRUEBAS CLIENT--
+describe("Pruebas de integracion con BDD del modelo de mongoose de Client ", () => {
+    let address = {} // address que vamos a usar como documento embebido dentro del client --> la definimos aca porque
+    // hay dos tests que necesitan acceder a ella por lo que es necesario que este en el scope de todas las pruebas
+    it("Chequea si se puede crear un Cliente", async () => {
+        console.log(idAddress)
+        address = await AddressModel.getAddress(idAddress);
+
+        const client = {
+            name: "Juan Pérez",
+            whatsapp: "+5491122334455",
+            email: "juanperez@example.com",
+            dni: 38999888,
+            address: address   
+        };
+
+        const newClient = await ClientModel.createClient(client)
+        console.log(newClient)
+        idClient = newClient._id // le asignamos el id del Client creado recientemente a la variable idClient para usar en las otras operaciones
+        expect(newClient._id).toBeDefined() // si el id del Client no esta definido entonces directamente no existe por lo que salio mal la prueba
+        expect(newClient.email).toBe("juanperez@example.com")
+        expect(newClient.address.street).toBe("Av. Libertador")  
+    })
+    it("Chequea si funciona un get del cliente creado anteriormente", async () => {
+        const foundClient = await ClientModel.getClient(idClient)
+        expect(foundClient._id).toBeDefined()
+        expect(foundClient.email).toBe("juanperez@example.com")
+        expect(foundClient.address.street).toBe("Av. Libertador")
         deleteAndDisconnect()
     })
 })

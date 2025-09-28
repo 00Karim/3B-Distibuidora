@@ -47,7 +47,7 @@ class productModel {
                 throw new Error(`Error, Id del producto invalido`)
 
             const product = await Product.findById(productId).populate('category')
-            
+            console.log(product)
             return product
         }catch(e){
             throw new Error(`Error obteniendo producto, ${e}`)
