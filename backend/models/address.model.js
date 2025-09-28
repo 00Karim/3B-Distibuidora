@@ -8,7 +8,6 @@ class AddressModel {
                 throw new Error(`Error, el ID del adress es invalido, ${e}`)
 
             const address = await Address.findById(addressId)
-
             return address
         }catch(e){
             throw new Error(`Error, no se pudo obtener el adress indicado, ${e}`)
