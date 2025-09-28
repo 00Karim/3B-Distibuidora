@@ -103,11 +103,11 @@ class productModel {
             }
             //Se chequea que el numero de stock a editar no haga que el stock total sea menos a 0
             //Se puede tanto sumar como restar stock
-            if((productId.stock + newStock) < 0){
+            const product = await Product.findById(productId)
+            if((product.stock + newStock) < 0){
                 throw new Error("Error, el stock no puede ser menor a 0")
             }
 
-            const product = await Product.findById('productId')
             product.stock += newStock
             await product.save()
 

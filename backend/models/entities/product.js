@@ -4,12 +4,12 @@ const MeasurementUnit = require("../enums/MeasurementUnit")
 
 const productSchema = new mongoose.Schema({
     name: {type: String, required: true},
-    price: {type: Number, required: true},
+    price: {type: Number, min: 0, required: true},
     image: {type: String, required: true},
-    description: {type: String},
+    description: {type: String, maxlength: 100},
     category: {type: Category.schema, required: true},
     unitOfMeasure: {type: String, enum: Object.values(MeasurementUnit), required: true},
-    stock: {type: Number, required: true},
+    stock: {type: Number, min: 0, required: true},
     glutenFree: {type: Boolean, required: true},
     brand: {type: String}
 })
