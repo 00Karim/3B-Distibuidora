@@ -28,7 +28,7 @@ class productService {
             if(!data.price) throw new Error(`Error, el precio es obligatorio`)
             if(!data.image) throw new Error(`Error, la imagen es obligatoria`)
             if(!data.category) throw new Error(`Error, la categoria es obligatorio`)
-            if(!data.unitOfMeasure) throw new Error(`Error, la unidad de medida es obligatoria`)
+            if(!data.unitOfMeasure) throw new Error(`Error, la unidad de medida es obligatorio`)
             if(!data.stock) throw new Error(`Error, el stock es obligatorio`)
             if(!data.glutenFree) throw new Error(`Error, el campo libre de gluten es obligatorio`)
 
