@@ -5,6 +5,7 @@ class packagingModel {
     static getPackagingType = async(packagingTypeId) => {
         try{
             if(!mongoose.Types.ObjectId.isValid(packagingTypeId))
+
                 throw new Error('El id del tipo de packaging es invalido')
 
             const packagingType = await PackagingType.findById(packagingTypeId) 
