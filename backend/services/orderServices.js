@@ -56,7 +56,7 @@ class orderService {
             if(!data.user) throw new Error(`Error, el usuario es obligatorio`)
             if(!data.client) throw new Error(`Error, el cliente es obligatorio`)
             if (!data.items || !Array.isArray(data.items) || data.items.length === 0) {
-                throw new Error("Debe enviarse al menos un item en el pedido")
+                throw new Error("Debe enviarse al menos un item en el pedido, es obligatorio")
             }
             if (!data.date) data.date = new Date()
 
@@ -72,10 +72,10 @@ class orderService {
 
             //Validacion del statys y tipo de envio
             if (data.status && !Object.values(StatusType).includes(data.status)) {
-                throw new Error("Estado inválido")
+                throw new Error("Estado invalido")
             }
             if (data.delivery && !Object.values(DeliveryType).includes(data.delivery)) {
-                throw new Error("Tipo de entrega inválido")
+                throw new Error("Tipo de entrega invalido")
             }
 
             //Validacion de los productos en cada item
@@ -99,7 +99,7 @@ class orderService {
                 //Se chequea el precio unitario del producto en el item
                 const unitPrice = Number(productObj.price ?? 0)
                 if (Number.isNaN(unitPrice) || !Number.isFinite(unitPrice) || unitPrice < 0) {
-                  throw new Error("Precio unitario inválido para un producto en items")
+                  throw new Error("Precio unitario incorrecto para un producto en items")
                 }
 
                 //Recalculo del precio por item y el subtotal
@@ -144,7 +144,7 @@ class orderService {
 
     static update = async(orderId, data = {}) => {
         try {
-            if (!this._isValidObjectId(orderId)) throw new Error("ID de pedido inválido")
+            if (!this._isValidObjectId(orderId)) throw new Error("Error de validacion: ID de pedido inválido")
 
             const payload = {}
             for (const key of ALLOWED_ORDER_UPDATE) {
@@ -154,34 +154,34 @@ class orderService {
             // Si se estan actualizando Items, se rechequearn y se recalcula el subtotal 
             if (payload.items) {
                 if (!Array.isArray(payload.items) || payload.items.length === 0) {
-                    throw new Error("La lista de items no puede estar vacía")
+                    throw new Error("Error de validacion: lista de items vacía")
                 }
                 let newTotal = 0
                 const processedItems = []
                 for (const rawItem of payload.items) {
-                if (!rawItem.product) throw new Error("Cada item debe contener un producto")
+                if (!rawItem.product) throw new Error("Error de validación: item sin producto")
                 let liveProduct = null
                 let productObj = rawItem.product
 
                 if (productObj._id && this._isValidObjectId(productObj._id)) {
                     liveProduct = await Product.findById(productObj._id)
-                    if (!liveProduct) throw new Error("Producto referenciado en items no existe")
+                    if (!liveProduct) throw new Error("Recurso no encontrado: producto inexistente")
                     productObj = liveProduct.toObject()
                 }
 
                 const amount = this._sanitizeNumber(rawItem.amount) ?? 1
-                if (amount < 1) throw new Error("La cantidad de un item debe ser >= 1")
+                if (amount < 1) throw new Error("Datos invalidos: La cantidad de un item debe ser >= 1")
 
                 const unitPrice = Number(productObj.price ?? 0)
                 if (Number.isNaN(unitPrice) || !Number.isFinite(unitPrice) || unitPrice < 0) {
-                    throw new Error("Precio unitario inválido para un producto en items")
+                    throw new Error("Datos invalidos: Precio unitario incorrecto para un producto en items")
                 }
 
                 const totalPrice = unitPrice * amount
                 newTotal += totalPrice
 
                 if (liveProduct && typeof liveProduct.stock === "number" && liveProduct.stock < amount) {
-                    throw new Error(`Stock insuficiente para el producto ${productObj._id || productObj.name}`)
+                    throw new Error(`Conflicto de estado: Stock insuficiente para el producto ${productObj._id || productObj.name}`)
                 }
 
                 processedItems.push({
@@ -200,27 +200,27 @@ class orderService {
 
             // Validacion del cambio de status
             if (payload.status) {
-                if (!Object.values(StatusType).includes(payload.status)) throw new Error("Estado inválido")
+                if (!Object.values(StatusType).includes(payload.status)) throw new Error("Datos invalidos: Estado inválido")
                 
                 const currentOrder = await orderModel.getOrder(orderId)
-                if (!currentOrder) throw new Error("Pedido no encontrado")
+                if (!currentOrder) throw new Error("Recurso no encontrado: pedido inexistente")
                 if (currentOrder.status === StatusType.DELIVERED && payload.status !== StatusType.DELIVERED) {
-                throw new Error("No se puede volver a un estado anterior al entregado")
+                throw new Error("Conflicto de estado: no se puede volver a un estado anterior a 'Entregado'")
                 }
             }
 
             // Validate assignedEmployees exist if updating
             if (payload.assignedEmployees) {
-                if (!Array.isArray(payload.assignedEmployees)) throw new Error("assignedEmployees debe ser un array")
+                if (!Array.isArray(payload.assignedEmployees)) throw new Error("Error de validacion: assignedEmployees no es un array")
                 for (const empId of payload.assignedEmployees) {
-                if (!this._isValidObjectId(empId)) throw new Error("ID de empleado inválido")
+                if (!this._isValidObjectId(empId)) throw new Error("Error de validacion: ID de empleado inválido")
                 const emp = await User.findById(empId)
-                if (!emp) throw new Error(`Empleado con id ${empId} no encontrado`)
+                if (!emp) throw new Error(`Recurso no encontrado: Empleado con id ${empId} no encontrado`)
                 }
             }
 
             const updated = await orderModel.updateOrder(orderId, payload)
-            if (!updated) throw new Error("No se pudo actualizar el pedido")
+            if (!updated) throw new Error("Recurso no encontrado: pedido inexistente")
             return updated
         } catch (e) {
         throw new Error(`Error en el servicio de order update, ${e}`)
@@ -229,9 +229,9 @@ class orderService {
 
     static async delete(orderId) {
         try {
-            if (!this._isValidObjectId(orderId)) throw new Error("ID de pedido inválido")
+            if (!this._isValidObjectId(orderId)) throw new Error("ID de pedido invalido")
             const deleted = await orderModel.deleteOrder(orderId)
-            if (!deleted) throw new Error("No se pudo eliminar el pedido o no existe")
+            if (!deleted) throw new Error("No se pudo eliminar el pedido o es inexistente")
             return deleted
         } catch (e) {
         throw new Error(`Error en el servicio de order delete, ${e}`)

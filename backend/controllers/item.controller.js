@@ -33,7 +33,7 @@ class LocalItemController {
 
     handleUpdateItem = async(req, res) => {
         try{
-            const item = await ItemServices.update(req.body)
+            const item = await ItemServices.update(req.params.id, req.body)
             return res.status(200).json(item)
         }catch(e){
             if(e.message.includes("obligatorio")) return res.status(404).json({error: e.message})
@@ -55,3 +55,5 @@ class LocalItemController {
         }
     }
 }
+
+module.exports = LocalItemController
