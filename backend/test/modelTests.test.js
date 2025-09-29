@@ -18,9 +18,11 @@ const AddressModel = require("../models/address.model")
 const PackageTypeModel = require("../models/packagingtype.model")
 const ClientModel = require("../models/client.model")
 const ItemModel = require("../models/item.model")
+const UserModel = require("../models/user.model")
 
 //IMPORTACION DE LOS ENUMS
 const PackageType = require("../models/enums/PackageType")
+const RoleType = require("../models/enums/RoleType")
 
 //DECLARACION DE IDS DE DOCUMENTOS PARA USO GLOBAL
 // declaramos la variables de id de cada clase para poder usarla mas adelante en operaciones que lo necesiten, 
@@ -31,6 +33,7 @@ let idClient = ""
 let idPackagingType = ""
 let idProduct = ""
 let idItem = ""
+let idUser = ""
 
 let executeClearTest = false // usamos esta variable para decidir cuando queremos que se borren los datos de la bdd en memoria
 // poruqe por ejemplo, si creamos una entidad y luego queremos usarla, eso no seria posible si dejamos que afterEach funcione
@@ -263,3 +266,36 @@ describe("Pruebas de integracion con BDD del modelo de mongoose Item ", () => {
         expect(updatedItem.product.category).toBeDefined()
     })
 })
+
+// --PRUEBAS DE USER--
+// describe("Pruebas de integracion con BDD del modelo de mongoose de User ", () => {
+//     let user = {} // lo declaramos antes para poder usarlo en todas las pruebas
+//     it("Chequea si se puede crear un user", async () => {
+//         user = {
+//             "email": "juan.perez@example.com",
+//             "password": "$2b$10$Xj2g8n6tF3kL3ZJg6pVd7u9/abcHashedPassword123", 
+//             "name": "Juan Pérez",
+//             "role": RoleType.EMPLOYEE,
+//             "creationDate": "2025-09-29T19:45:00.000Z"
+//         }
+//         const newUser = await UserModel.createUser(user)
+//         console.log("USUARIO CREADO EN PRUEBAS USER: ", newUser)
+//         idUser = newUser._id // le asignamos el id del usuario creado recientemente a la variable idUser para usar en las otras operaciones
+//         expect(newUser._id).toBeDefined() // si el id del usuario no esta definido entonces directamente no existe por lo que salio mal la prueba
+//         expect(newUser.email).toBe("juan.perez@example.com")
+//         expect(newUser.role).toBe(RoleType.EMPLOYEE)  
+//     })
+//     it("Chequea si se funciona un get del user creado anteriormente", async () => {
+//         const foundUser = await UserModel.getUser(idUser)
+//         expect(foundUser._id).toBeDefined()
+//         expect(foundUser.password).toBe("$2b$10$Xj2g8n6tF3kL3ZJg6pVd7u9/abcHashedPassword123")
+//         expect(foundUser.role).toBe(RoleType.EMPLOYEE)
+//     })
+//     it("Chequea si se borra el user creado anteriormente", async () => {
+//         await UserModel.deleteUser(idUser)
+//         const deletedUser = await UserModel.getUser(idUser)
+//         expect(deletedUser).toBeNull()
+//         idUser = (await UserModel.createUser(user))._id // creamos el objeto de nuevo para poder usarlo en otras operaciones mas adelante (para poder usarlo en Order)
+//         deleteAndDisconnect()
+//     })
+// })
