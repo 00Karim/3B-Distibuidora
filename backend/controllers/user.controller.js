@@ -51,7 +51,7 @@ class LocalUserController {
             return res.status(200).json(user)
         }catch(e){
             if(e.message.includes("no encontrado invalido")){ 
-                return res.status(400).json({error: e.message})
+                return res.status(404).json({error: e.message})
             }
             
             return res.status(500).json({error: "Error interno del servidor"})
