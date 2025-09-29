@@ -143,10 +143,9 @@ describe("Pruebas de integracion con BDD del modelo de mongoose de Product ", ()
         idProduct = (await ProductModel.createProduct(product))._id // creamos el objeto de nuevo para poder usarlo en otras operaciones mas adelante 
     })
 })
-
 // --PRUEBAS ADDRESS--
 describe("Pruebas de integracion con BDD del modelo de mongoose Address", () => {
-    it("Chequea si se puede crear una categoria", async () => {
+    it("Chequea si se puede crear una adress", async () => {
         const address = {
             street: "Av. Libertador",
             number: "1234",
