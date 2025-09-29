@@ -1,6 +1,7 @@
 #### PROYECTO FINAL INTEGRADOR - Karim Vélez y Franco Baudrix
 
 Link de Jira: https://bixve.atlassian.net/jira/software/projects/TRES/boards/34?atlOrigin=eyJpIjoiODFhMzJhM2E1YTlkNDYyNDk5ZTQ0YjgzYWJmYTg3NmEiLCJwIjoiaiJ9
+
 Link de github: https://github.com/00Karim/3B-Distibuidora
 
 ##### Software para manejo de ventas y stock para la distribuidora 3B.
