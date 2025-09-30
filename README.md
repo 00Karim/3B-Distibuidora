@@ -68,5 +68,8 @@ Cada packaging incluye el tipo y la cantidad utilizada en una orden
 
 
 ##### DIAGRAMA DE LA BASE DE DATOS
-!["Diagrama BDD"](./assets/3B%20Database%20.jpeg)
+!["Diagrama BDD"](./assets/3B%20Database.jpeg)
+
+##### DIAGRAMA CON METODOS
+!["Diagrama BDD"](./assets/3B%20Database%20Metodos.jpeg)
 
