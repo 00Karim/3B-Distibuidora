@@ -1,3 +1,4 @@
+const mongoose = require("mongoose")
 const User = require("../models/entities/user")
 
 class UserModel {
@@ -22,11 +23,17 @@ class UserModel {
             }
         }
 
+        static getUserByEmail = async(userEmail) => {
+            try{
+                user = await User.findOne({ userEmail })
+                return user
+            }catch(e){
+                throw new Error(`Error, el usuario no pudo encontrarse por email ${e}`)
+            }
+        }
+
         static createUser = async(userData) => {
             try{
-                if(!mongoose.Types.ObjectId.isValid(userId))
-                    throw new Error(`Error, el ID ingresado no es valido ${e}`)
-
                 const newUser = new User(userData)
                 await newUser.save()
 

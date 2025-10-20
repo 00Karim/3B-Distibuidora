@@ -1,4 +1,9 @@
 #### PROYECTO FINAL INTEGRADOR - Karim Vélez y Franco Baudrix
+
+Link de Jira: https://bixve.atlassian.net/jira/software/projects/TRES/boards/34?atlOrigin=eyJpIjoiODFhMzJhM2E1YTlkNDYyNDk5ZTQ0YjgzYWJmYTg3NmEiLCJwIjoiaiJ9
+
+Link de github: https://github.com/00Karim/3B-Distibuidora
+
 ##### Software para manejo de ventas y stock para la distribuidora 3B.
 
 Estamos contratados para desarrollar un software para la empresa distribuidora 3B (Brasil 977) que los ayude a organizar sus ventas y su stock.
@@ -68,5 +73,8 @@ Cada packaging incluye el tipo y la cantidad utilizada en una orden
 
 
 ##### DIAGRAMA DE LA BASE DE DATOS
-!["Diagrama BDD"](./assets/3B%20Database%20.jpeg)
+!["Diagrama BDD"](./assets/3B%20Database.jpeg)
+
+##### DIAGRAMA CON METODOS
+!["Diagrama BDD"](./assets/3B%20Database%20Metodos.jpeg)
 
