@@ -1,4 +1,7 @@
+const mongoose = require("mongoose")
+
 const Order = require("../models/entities/order")
+// const Client = require("../models/entities/client")
 
 class orderModel {
     static getAllOrders = async(filters = {}) => {
@@ -13,17 +16,17 @@ class orderModel {
             if(filters.delivery)
                 query.delivery = filters.delivery
 
-            if(filters.clientName){
-                const clients = await Client.find({
-                    name: { $regex: filters.clientName, $options: 'i'}
-                })
-                const clientIds = clients.map(client => client._id)
-                query.client = { $in: clientIds}
-            }
+            // if(filters.clientName){
+            //     const clients = await Client.find({
+            //         name: { $regex: filters.clientName, $options: 'i'}
+            //     })
+            //     const clientIds = clients.map(client => client._id)
+            //     query.client = { $in: clientIds}
+            // }
 
             const orders = await Order.find(query)
-                .populate('user')
-                .populate('client')
+                .populate('assignedEmployees')
+                .populate('packaging')
                 .sort({ date:-1 })
             
             return orders
@@ -37,7 +40,7 @@ class orderModel {
             if(!mongoose.Types.ObjectId.isValid(orderId))
                 throw new Error(`Error, Id del pedido invalido`)
             
-            const order = await Order.findById(orderId).populate('user').populate('client')
+            const order = await Order.findById(orderId).populate('assignedEmployees').populate('packaging')
 
             return order
         }catch(e){
@@ -64,7 +67,7 @@ class orderModel {
                 orderId,
                 orderData,
                 {new: true, runValidators: true}
-            ).populate('user').populate('client')
+            )
 
             return updatedOrder
         }catch(e){
