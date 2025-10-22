@@ -66,9 +66,9 @@ class orderService {
             if(!user) throw new Error(`Error, no se encontro el usuario indicado`)
 
             //Validacion existencia del cliente
-            if(!this._isValidObjectId(data.client)) throw new Error(`El ID del cliente es invalido`)
-            const client = await Client.findById(data.client) 
-            if(!client) throw new Error(`Error, no se encontro el cliente indicado`)
+            // if(!this._isValidObjectId(data.client)) throw new Error(`El ID del cliente es invalido`)
+            // const client = await Client.findById(data.client) 
+            // if(!client) throw new Error(`Error, no se encontro el cliente indicado`)
 
             //Validacion del statys y tipo de envio
             if (data.status && !Object.values(StatusType).includes(data.status)) {
@@ -83,21 +83,19 @@ class orderService {
             const processedItems = []
             for(const rawItem of data.items){
                 if(!rawItem.product) throw new Error(`Error, cada item debe tener un producto`)
-                let liveProduct = null
-                let productObj = rawItem.product
+                let product = null
 
                 //Se busca y se asigna el producto por ID
-                if(productObj._id && this._isValidObjectId(productObj._id)){
-                    liveProduct = await Product.findById(productObj._id)
-                    if (!liveProduct) throw new Error("Producto referenciado en items no existe")
-                    productObj = liveProduct.toObject()
+                if(rawItem.product._id && this._isValidObjectId(rawItem.product._id)){
+                    product = await Product.findById(rawItem.product._id)
+                    if (!product) throw new Error("Producto referenciado en items no existe")
                 }
 
-                const amount = this._sanitizeNumber(rawItem.amount) ?? 1
+                const amount = this._sanitizeNumber(rawItem.amount) ?? 1 // si no existe una amount entonces se defaultea a 1
                 if (amount < 1) throw new Error("La cantidad de un item debe ser >= 1")
                 
                 //Se chequea el precio unitario del producto en el item
-                const unitPrice = Number(productObj.price ?? 0)
+                const unitPrice = Number(product.price ?? 0)
                 if (Number.isNaN(unitPrice) || !Number.isFinite(unitPrice) || unitPrice < 0) {
                   throw new Error("Precio unitario incorrecto para un producto en items")
                 }
@@ -106,14 +104,14 @@ class orderService {
                 const totalPrice = unitPrice * amount
                 computedTotal += totalPrice
 
-                // Chequeo del stock del producto
-                if (liveProduct && typeof liveProduct.stock === "number" && liveProduct.stock < amount) {
-                  throw new Error(`Stock insuficiente para el producto ${productObj._id || productObj.name}`)
+                // Chequeo del stock del producto, si no hay suficiente stock para efectuar una venta entonces no se puede efectuar la venta
+                if (product && typeof product.stock === "number" && product.stock < amount) {
+                  throw new Error(`Stock insuficiente para el producto ${product._id || product.name}`)
                 }
 
                 // Construccion del Item normalizado, la idea es no confiar en client para enviar a la DB
                 processedItems.push({
-                    product: productObj,
+                    product: rawItem.product._id,
                     amount,
                     totalPrice,
                     weight: rawItem.weight,
@@ -126,13 +124,14 @@ class orderService {
             const orderPayload = {
                 items: processedItems,
                 user: user._id,
-                client: client._id,
+                assignedEmployees: data.assignedEmployees,
+                client: data.client,
                 total: computedTotal,
-                status: orderData.status ?? StatusType.REVISION,
-                date: new Date(orderData.date),
-                delivery: orderData.delivery ?? DeliveryType.STORE_PICK_UP,
-                remarks: orderData.remarks,
-                packaging: orderData.packaging 
+                status: data.status ?? StatusType.REVISION,
+                date: new Date(data.date),
+                delivery: data.delivery ?? DeliveryType.STORE_PICK_UP,
+                remarks: data.remarks,
+                packaging: data.packaging 
             }
 
             const createdOrder = await orderModel.createOrder(orderPayload)
@@ -160,19 +159,14 @@ class orderService {
                 const processedItems = []
                 for (const rawItem of payload.items) {
                 if (!rawItem.product) throw new Error("Error de validación: item sin producto")
-                let liveProduct = null
-                let productObj = rawItem.product
 
-                if (productObj._id && this._isValidObjectId(productObj._id)) {
-                    liveProduct = await Product.findById(productObj._id)
-                    if (!liveProduct) throw new Error("Recurso no encontrado: producto inexistente")
-                    productObj = liveProduct.toObject()
-                }
+                const product = await Product.findById(rawItem.product._id);
+                if (!product) throw new Error("Producto inexistente");
 
-                const amount = this._sanitizeNumber(rawItem.amount) ?? 1
-                if (amount < 1) throw new Error("Datos invalidos: La cantidad de un item debe ser >= 1")
+                const amount = this._sanitizeNumber(rawItem.amount) ?? 1;
+                if (amount < 1) throw new Error("Cantidad de un item debe ser >= 1");
 
-                const unitPrice = Number(productObj.price ?? 0)
+                const unitPrice = Number(product.price ?? 0)
                 if (Number.isNaN(unitPrice) || !Number.isFinite(unitPrice) || unitPrice < 0) {
                     throw new Error("Datos invalidos: Precio unitario incorrecto para un producto en items")
                 }
@@ -180,12 +174,12 @@ class orderService {
                 const totalPrice = unitPrice * amount
                 newTotal += totalPrice
 
-                if (liveProduct && typeof liveProduct.stock === "number" && liveProduct.stock < amount) {
-                    throw new Error(`Conflicto de estado: Stock insuficiente para el producto ${productObj._id || productObj.name}`)
+                if (product && typeof product.stock === "number" && product.stock < amount) {
+                    throw new Error(`Conflicto de estado: Stock insuficiente para el producto ${product._id || product.name}`)
                 }
 
                 processedItems.push({
-                    product: productObj,
+                    product: rawItem.product._id,
                     amount,
                     totalPrice,
                     weight: rawItem.weight,
@@ -223,7 +217,7 @@ class orderService {
             if (!updated) throw new Error("Recurso no encontrado: pedido inexistente")
             return updated
         } catch (e) {
-        throw new Error(`Error en el servicio de order update, ${e}`)
+            throw new Error(`Error en el servicio de order update, ${e}`)
         }
     }
 

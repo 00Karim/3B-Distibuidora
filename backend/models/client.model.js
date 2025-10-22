@@ -18,9 +18,8 @@ class clientModel {
     static createClient = async(clientData) => {
         try{
             const newClient = new Client(clientData)
-            await newClient.save()
-
-            return newClient
+            await newClient.validate() // validamos el objeto pero sin guardarlo asi se aplican las restricciones que decidimos
+            return newClient.toObject() // lo convertimos en objeto para ignorar toda la metadata innecesaria
         }catch(e){
             throw new Error(`Error creando el nuevo cliente, ${e}`)
         }

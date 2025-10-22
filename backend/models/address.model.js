@@ -17,8 +17,8 @@ class AddressModel {
     static createAddress = async(adressData) => {
         try{    
             const newAddress = new Address(adressData)
-            await newAddress.save()
-            return newAddress
+            await newAddress.validate() // validamos el objeto pero sin guardarlo asi se aplican las restricciones que decidimos
+            return newAddress.toObject() // lo convertimos en objeto para ignorar toda la metadata innecesaria
         }catch(e){
             throw new Error(`Error, no se pudo crear el adress indicado, ${e}`)
         }
