@@ -270,12 +270,14 @@ describe("Pruebas de integracion con BDD del modelo de mongoose Item ", () => {
     it("Chequea si se modifica un item", async () => {
         const category = createTempCategory()
         const item = await createTempItem()
+        console.log("ITEM ANTES DE UPDATE: ", item)
         const updatedItem = await ItemModel.updateItem(item, {
-            weight: 2,
+            weight: 30,
             isAvailable: false,
         });
+        console.log("ITEM DESPUES DE UPDATE: ", updatedItem)
         expect(updatedItem.isAvailable).toBe(false);
-        expect(updatedItem.weight).toBe(2);
+        expect(updatedItem.weight).toBe(30);
     });
 });
 

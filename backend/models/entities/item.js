@@ -3,7 +3,8 @@ const Product = require("./product")
 
 const itemSchema = new mongoose.Schema({
     product: {type: Product.schema, required: true},
-    deduction: {type: Number, min: 0, max: 0.99, default: null},
+    pricePerUnit: {type: Number},
+    // deduction: {type: Number, min: 0, max: 0.99, default: null},
     totalPrice: {type: Number, min: 0, required: true},
     amount: {type: Number, default: 1, min: 1},
     weight: {type: Number, min: 0},

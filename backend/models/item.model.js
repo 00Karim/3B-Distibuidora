@@ -35,7 +35,7 @@ class ItemModel {
     }
 
     static updateItem = async(oldItem, newItemData) => {
-        const itemAttributes = ["product", "totalPrice", "amount", "weight", "isAvailable", "remarks"]
+        const itemAttributes = ["product", "pricePerUnit", "totalPrice", "amount", "weight", "isAvailable", "remarks"]
         try{
             for(const attribute of itemAttributes){
                 if (newItemData[attribute] !== undefined){
