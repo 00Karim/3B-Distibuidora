@@ -1,5 +1,6 @@
 // const mongoose = require("mongoose")
 const Item = require("../models/entities/item")
+const ProductModel = require("../models/product.model")
 
 class ItemModel {
     // static getAllItems = async() => {
@@ -28,6 +29,9 @@ class ItemModel {
         try{
             const item = new Item(itemData)
             await item.validate() // validamos el objeto pero sin guardarlo asi se aplican las restricciones que decidimos
+            const productObject = await ProductModel.getProductById(item.product)
+            item.product = productObject // convertimos el producto en un objeto embebido manualmente porque sino tenemos que guardar a item en la bdd y es innecesario
+            console.log("ITEM EN CREATE ITEM: ", item)
             return item.toObject() // lo convertimos en objeto para ignorar toda la metadata innecesaria
         }catch(e){
             throw new Error(`Error, no se pudo crear el item, ${e}`)

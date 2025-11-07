@@ -26,7 +26,8 @@ const {
     createTempClient,
     createTempItem,
     createTempUser,
-    createTempPackaging
+    createTempPackaging,
+    createTempOrder
 } = require("./modelTestingSetup.js") // estas funciones las vamos a usar
 // para poder aislar todas las pruebas sin necesitar de las otras para 
 // usar las ids de los objetos o por ejemplo para no tener que usar una category
@@ -45,11 +46,12 @@ const PackageTypeModel = require("../models/packagingType.model.js");
 const ClientModel = require("../models/client.model");
 const ItemModel = require("../models/item.model");
 const UserModel = require("../models/user.model");
+const OrderModel = require("../models/order.model")
 
 //IMPORTACION DE LOS ENUMS
 const PackageType = require("../models/enums/PackageType");
 const RoleType = require("../models/enums/RoleType");
-
+const DeliveryType = require("../models/enums/DeliveryType.js");
 
 beforeAll(async () => {
     await connectTestDB();
@@ -282,34 +284,109 @@ describe("Pruebas de integracion con BDD del modelo de mongoose Item ", () => {
 });
 
 // --PRUEBAS DE USER--
-// describe("Pruebas de integracion con BDD del modelo de mongoose de User ", () => {
-//     let user = {} // lo declaramos antes para poder usarlo en todas las pruebas
-//     it("Chequea si se puede crear un user", async () => {
-//         user = {
-//             "email": "juan.perez@example.com",
-//             "password": "$2b$10$Xj2g8n6tF3kL3ZJg6pVd7u9/abcHashedPassword123",
-//             "name": "Juan Pérez",
-//             "role": RoleType.EMPLOYEE,
-//             "creationDate": "2025-09-29T19:45:00.000Z"
-//         }
-//         const newUser = await UserModel.createUser(user)
-//         console.log("USUARIO CREADO EN PRUEBAS USER: ", newUser)
-//         idUser = newUser._id // le asignamos el id del usuario creado recientemente a la variable idUser para usar en las otras operaciones
-//         expect(newUser._id).toBeDefined() // si el id del usuario no esta definido entonces directamente no existe por lo que salio mal la prueba
-//         expect(newUser.email).toBe("juan.perez@example.com")
-//         expect(newUser.role).toBe(RoleType.EMPLOYEE)
-//     })
-//     it("Chequea si se funciona un get del user creado anteriormente", async () => {
-//         const foundUser = await UserModel.getUser(idUser)
-//         expect(foundUser._id).toBeDefined()
-//         expect(foundUser.password).toBe("$2b$10$Xj2g8n6tF3kL3ZJg6pVd7u9/abcHashedPassword123")
-//         expect(foundUser.role).toBe(RoleType.EMPLOYEE)
-//     })
-//     it("Chequea si se borra el user creado anteriormente", async () => {
-//         await UserModel.deleteUser(idUser)
-//         const deletedUser = await UserModel.getUser(idUser)
-//         expect(deletedUser).toBeNull()
-//         idUser = (await UserModel.createUser(user))._id // creamos el objeto de nuevo para poder usarlo en otras operaciones mas adelante (para poder usarlo en Order)
-//         deleteAndDisconnect()
-//     })
-// })
+describe("Pruebas de integracion con BDD del modelo de mongoose de User ", () => {
+    it("Chequea si se puede crear un user", async () => {
+        const user = {
+            "email": "juan.perez@example.com",
+            "password": "$2b$10$Xj2g8n6tF3kL3ZJg6pVd7u9/abcHashedPassword123",
+            "name": "Juan Pérez",
+            "role": RoleType.EMPLOYEE,
+            "creationDate": "2025-09-29T19:45:00.000Z"
+        }
+        const newUser = await UserModel.createUser(user)
+        console.log("USUARIO CREADO EN PRUEBAS USER: ", newUser)
+        expect(newUser._id).toBeDefined() // si el id del usuario no esta definido entonces directamente no existe por lo que salio mal la prueba
+        expect(newUser.email).toBe("juan.perez@example.com")
+        expect(newUser.role).toBe(RoleType.EMPLOYEE)
+    })
+    it("Chequea si se funciona un get del user creado anteriormente", async () => {
+        const nuevoUser = await createTempUser()        
+        const foundUser = await UserModel.getUser(nuevoUser._id)
+        expect(foundUser._id).toBeDefined()
+        expect(foundUser.password).toBe("$2b$10$hashedExample1234567890")
+        expect(foundUser.role).toBe(RoleType.EMPLOYEE)
+    })
+    it("Chequea si se borra un user", async () => {
+        const nuevoUsuario = await createTempUser()
+        await UserModel.deleteUser(nuevoUsuario._id)
+        const deletedUser = await UserModel.getUser(nuevoUsuario._id)
+        expect(deletedUser).toBeNull()
+    })
+})
+
+// --PRUEBAS DE ORDER--
+describe("Pruebas de integracion con BDD del modelo de mongoose de Order ", () => {
+    it("Chequea si se puede crear una Order", async () => {
+        const item1 = await createTempItem()
+        const item2 = await createTempItem()
+
+        const user = await createTempUser()
+
+        const client = await createTempClient()
+
+        const packaging = await createTempPackaging()
+        const packaging2 = await createTempPackaging()
+
+        const order = {
+            "items": [
+                item1, 
+                item2
+            ],
+            "user": user._id,
+            "assignedEmployees": [
+                user._id
+            ],
+            "total": 3200,
+            "status": "pending",
+            "date": "2025-11-06T18:00:00.000Z",
+            "delivery": DeliveryType.STORE_PICK_UP,
+            "client": client,
+            "remarks": "Entregar antes del mediodía.",
+            "packaging": [
+                packaging,
+                packaging2
+            ]
+        }
+        const newOrder = await OrderModel.createOrder(order)
+        console.log("ORDER CREADA EN PRUEBAS ORDER: ", JSON.stringify(newOrder, null, 2));
+        console.log("ID PRODUCTO DENTRO DE ORDER: ", newOrder.items[0]._id);
+        
+        expect(newOrder._id).toBeDefined() // si el id del usuario no esta definido entonces directamente no existe por lo que salio mal la prueba
+        expect(newOrder.items.length).toBe(2)
+        expect(typeof (newOrder.items[0].totalPrice)).toBe("number")
+        expect(mongoose.Types.ObjectId.isValid(newOrder.user)).toBeTruthy()
+        expect(mongoose.Types.ObjectId.isValid(newOrder.assignedEmployees[0]._id)).toBeTruthy()
+        expect(newOrder.status).toBe("pending")
+        expect(newOrder.delivery).toBe(DeliveryType.STORE_PICK_UP)
+        expect(newOrder.client.name).toBe("Juan Pérez")
+    })
+    it("Chequea si se funciona un get de una order", async () => {
+        const nuevaOrder = await createTempOrder();
+        const orderEncontrada = await OrderModel.getOrder(nuevaOrder._id)
+        expect(orderEncontrada._id).toBeDefined()
+        expect(orderEncontrada.items[0].totalPrice).toBe(2400)
+    })
+    it("Chequea si se puede actualizar una order", async () => {
+        const nuevaOrder = await createTempOrder()
+
+        const nuevoUser = await createTempUser()
+        // contexto para chequear un cambio de user
+        const usuarioViejo = nuevaOrder.user
+
+        const nuevoItem = await createTempItem()
+        // contexto para chequear un cambio de items
+        const itemsViejos = nuevaOrder.items
+
+        const orderActualizada = await OrderModel.updateOrder(nuevaOrder._id, {user: nuevoUser, items: [...nuevaOrder.items, nuevoItem], delivery: DeliveryType.OUTER_CITY})
+
+        expect(orderActualizada.user === usuarioViejo).toBeFalsy()
+        expect(itemsViejos.length).toBeLessThan(orderActualizada.items.length)
+        expect(orderActualizada.delivery).toBe(DeliveryType.OUTER_CITY)
+    })
+    it("Chequea si se puede borrar una order", async () => {
+        const nuevaOrder = await createTempOrder()
+        await OrderModel.deleteOrder(nuevaOrder._id)
+        const deletedOrder = await OrderModel.getOrder(nuevaOrder._id)
+        expect(deletedOrder).toBeNull()
+    })
+})

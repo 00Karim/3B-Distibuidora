@@ -1,9 +1,8 @@
 const mongoose = require("mongoose")
-
-const Order = require("../models/entities/order")
+const Order = require("./entities/order")
 // const Client = require("../models/entities/client")
 
-class orderModel {
+class OrderModel {
     static getAllOrders = async(filters = {}) => {
         const query = {}
         try{
@@ -89,4 +88,4 @@ class orderModel {
     }
 }
 
-module.exports = orderModel;
+module.exports = OrderModel;

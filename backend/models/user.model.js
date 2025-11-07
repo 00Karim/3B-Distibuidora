@@ -13,8 +13,8 @@ class UserModel {
         
         static getUser = async(userId) => {
             try{
-                if(!mongoose.Types.ObjectId.isValid(userId))
-                    throw new Error(`Error, el ID ingresado no es valido ${e}`)
+                // if(!mongoose.Types.ObjectId.isValid(userId))
+                //     throw new Error(`Error, el ID ingresado no es valido`)
     
                 const user = await User.findById(userId)
                 return user
@@ -34,7 +34,9 @@ class UserModel {
 
         static createUser = async(userData) => {
             try{
+                console.log("DATA QUE LLEGA AL MODELO DEL USER: ", userData);
                 const newUser = new User(userData)
+                console.log("USUARIO NUEVO CREADO: ", newUser);
                 await newUser.save()
 
                 return newUser
@@ -64,7 +66,7 @@ class UserModel {
         static deleteUser = async(userId) => {
             try{
                 if(!mongoose.Types.ObjectId.isValid(userId))
-                    throw new Error(`Error, el ID ingresado no es valido ${e}`)
+                    throw new Error(`Error, el ID ingresado no es valido`)
 
                 const userDeleted = await User.findByIdAndDelete(userId)
                 return userDeleted
