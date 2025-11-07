@@ -23,6 +23,15 @@ class UserModel {
             }
         }
 
+        static getUserByEmail = async(userEmail) => {
+            try{
+                const user = await User.findOne({ userEmail })
+                return user
+            }catch(e){
+                throw new Error(`Error, el usuario no pudo encontrarse por email ${e}`)
+            }
+        }
+
         static createUser = async(userData) => {
             try{
                 const newUser = new User(userData)

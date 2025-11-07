@@ -29,6 +29,7 @@ class userService {
         return await bcrypt.hash(password, saltRounds)
     }
 
+    //Metodos publicos
     static async getAll() {
         try {
             const users = await UserModel.getAllUsers()
@@ -51,34 +52,39 @@ class userService {
 
     static async create(data = {}) {
         try {
-        const email = this._sanitizeString(data.email, 50)
-        if (!email || !this._validateEmail(email)) {
-            throw new Error("Email inválido")
-        }
+            const email = this._sanitizeString(data.email, 50)
+            if (!email || !this._validateEmail(email)) {
+                throw new Error("Email invalido")
+            }
 
-        const name = this._sanitizeString(data.name, 50)
-        if (!name) throw new Error("El nombre es obligatorio")
+            //Comprobacion de email duplicado
+            const existingEmail = await userModel.getUserByEmail(data.email) 
+            if(existingEmail) throw new Error("El email ya ha sido utilizado")
+            
+            const name = this._sanitizeString(data.name, 50)
+            if (!name) throw new Error("El nombre es obligatorio")
 
-        if (!data.password || String(data.password).length < 6) {
-            throw new Error("La contrasenia debe tener al menos 6 caracteres")
-        }
-        const hashedPassword = await this._hashPassword(data.password)
+            if (!data.password || String(data.password).length < 6) {
+                throw new Error("La contrasenia debe tener al menos 6 caracteres")
+            }
 
-        if (!data.role || !Object.values(RoleType).includes(data.role)) {
-            throw new Error("Rol inválido")
-        }
+            const hashedPassword = await this._hashPassword(data.password)
 
-        const userPayload = {
-            email,
-            password: hashedPassword,
-            name,
-            role: data.role
-        }
+            if (!data.role || !Object.values(RoleType).includes(data.role)) {
+                throw new Error("Rol inválido")
+            }
 
-        const newUser = await UserModel.createUser(userPayload)
-        return newUser
+            const userPayload = {
+                email,
+                password: hashedPassword,
+                name,
+                role: data.role
+            }
+
+            const newUser = await UserModel.createUser(userPayload)
+            return newUser
         } catch (e) {
-        throw new Error(`UserService.create: ${e.message || e}`)
+            throw new Error(`UserService.create: ${e.message || e}`)
         }
     }
 
@@ -131,7 +137,7 @@ class userService {
 
     static async delete(userId) {
         try {
-            if (!this._isValidObjectId(userId)) throw new Error("ID inválido")
+            if (!this._isValidObjectId(userId)) throw new Error("ID invalido")
             const deleted = await UserModel.deleteUser(userId)
             if (!deleted) throw new Error("Usuario no encontrado o no eliminado")
             return deleted
