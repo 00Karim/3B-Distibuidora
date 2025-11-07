@@ -6,9 +6,11 @@ const AddressModel = require("../models/address.model")
 const ClientModel = require("../models/client.model")
 const UserModel = require("../models/user.model")
 const PackagingTypeModel = require("../models/packagingType.model")
+const OrderModel = require("../models/order.model")
 
 //ENUMS
 const PackageType = require("../models/enums/PackageType")
+const RoleType = require("../models/enums/RoleType")
 
 const createTempCategory = async() => {
     const category = {
@@ -60,7 +62,7 @@ const createTempAddress = async () => {
 }
 
 const createTempClient = async () => {
-  const address = await createAddressFixture();
+  const address = await createTempAddress();
 
   const clientData = {
     name: "Juan Pérez",
@@ -94,4 +96,28 @@ const createTempPackaging = async () => {
   return await PackagingTypeModel.createPackagingType(packaging);
 };
 
-module.exports = {createTempCategory, createTempProduct, createTempAddress, createTempClient, createTempItem, createTempUser, createTempPackaging}
+const createTempOrder = async () => {
+  const item = await createTempItem();          
+  const client = await createTempClient();      
+  const user = await createTempUser();          
+  const packaging = await createTempPackaging();
+
+  const total = item.totalPrice; 
+
+  const orderData = {
+    items: [item],                      
+    user: user._id,                     
+    assignedEmployees: [user._id],      
+    total,                              
+    status: "pending",                  
+    date: new Date(),                   
+    delivery: "store_pick_up",          
+    client,                             
+    remarks: "Pedido de prueba generado por createTempOrder",
+    packaging: [packaging._id]          
+  };
+
+  return await OrderModel.createOrder(orderData);
+};
+
+module.exports = {createTempCategory, createTempProduct, createTempAddress, createTempClient, createTempItem, createTempUser, createTempPackaging, createTempOrder}
