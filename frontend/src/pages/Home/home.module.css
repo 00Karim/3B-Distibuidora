@@ -1,0 +1,7 @@
+.home {
+  background-image: url("../../assets/deposito.jpg");
+  background-size: cover;
+  background-position: center;
+  padding: 1rem;
+  text-align: center;
+}
