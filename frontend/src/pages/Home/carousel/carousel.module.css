@@ -1,0 +1,93 @@
+.carousel {
+  position: relative;
+}
+
+/* Alto del carrusel */
+.carousel__swiper {
+  height: 300px;
+}
+
+/* Slide wrapper para efectos*/
+.carousel__slide {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+/* Imagen recortada sin deformación */
+.carousel img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  object-position: center;
+}
+
+/* Overlay centrado con texto */
+.carousel__overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+
+  color: #fff;
+  padding: 1rem;
+
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.25),
+    rgba(0, 0, 0, 0.25)
+  );
+}
+
+.carousel__title {
+  font-size: 2rem;
+  margin: 0 0 0.5rem;
+  line-height: 1.1;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+}
+
+.carousel__subtitle {
+  font-size: 1.1rem;
+  margin: 0;
+  max-width: 900px;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+}
+
+/* Botones de navegación */
+.carousel__btn {
+  position: absolute !important;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 2;
+  background: rgba(0, 0, 0, 0.35);
+  color: #fff;
+}
+
+.carousel__btn:hover {
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.carousel__btn--prev {
+  left: 8px;
+}
+
+.carousel__btn--next {
+  right: 8px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .carousel__swiper {
+    height: 220px;
+  }
+  .carousel__title {
+    font-size: 1.4rem;
+  }
+  .carousel__subtitle {
+    font-size: 0.95rem;
+  }
+}

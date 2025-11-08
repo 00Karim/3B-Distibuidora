@@ -1,0 +1,28 @@
+.navbar {
+  background-color: #920c0c;
+  color: white;
+  text-align: center;
+  padding: 0rem;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.navbar__inner {
+  display: flex;
+  justify-content: center;
+  gap: 5rem;
+}
+
+.navbar__inner a {
+  color: white;
+  text-decoration: none;
+  font-weight: bold;
+  padding: 0.5rem;
+}
+
+.navbar__promo {
+  background-color: #ffcc00;
+  color: black;
+  font-weight: bold;
+}

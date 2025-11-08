@@ -1,0 +1,11 @@
+.topbar {
+  background-color: #b60000;
+  text-align: center;
+  padding: 0rem;
+  top: 0;
+}
+
+.img_logo img {
+  width: 80px;
+  height: auto;
+}
