@@ -1,9 +1,9 @@
 const mongoose = require("mongoose")
 const { MongoMemoryServer } = require("mongodb-memory-server") // nos permite crear un server temporal de mongodb en memoria
 
-// este archivo sirve para minimizar el codigo que se usa en las test
-// ademas porque todo el codigo dbajo no nos importa para la test en 
-// si, este es solo el setup del entorno que nos permite simular la db para hacer pruebas
+// este archivo sirve para minimizar el codigo que se usa en las test...
+// ..ademas porque todo el codigo dbajo no nos importa para la test en...
+// ...si, este es solo el setup del entorno que nos permite simular la db para hacer pruebas
 
 let mongoServer; // la declaramos aca afuera asi el resto de las funciones pueden acceder a su valor
 
@@ -13,8 +13,8 @@ async function connectTestDB() {
     await mongoose.connect(uri) // nos conectamos como siempre pero usando el server en memoria que creamos recien
 };
 
-// usamos la siguiente funcion para cortar la conexion con el servidor en memoria, de esta forma luego 
-// podemos borrarlo ya que no nos sirve de nada que siga en pie (solo lo usamos para el test)
+// usamos la siguiente funcion para cortar la conexion con el servidor en memoria, de esta forma luego...
+// ...podemos borrarlo ya que no nos sirve de nada que siga en pie (solo lo usamos para el test)
 async function disconnectTestDB(){
     await mongoose.disconnect() // nos desconectamos del server
     await mongoServer.stop() // apagamos el servidor en memoria 
