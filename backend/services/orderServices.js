@@ -4,8 +4,8 @@ const Product = require("../models/entities/product")
 const User = require("../models/entities/user")
 const Client = require("../models/entities/client")
 
-const StatusType = require("../enums/StatusType")
-const DeliveryType = require("../enums/DeliveryType")
+const StatusType = require("../models/enums/StatusType")
+const DeliveryType = require("../models/enums/DeliveryType")
 
 const ALLOWED_ORDER_UPDATE = [
   "items",

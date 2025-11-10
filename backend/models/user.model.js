@@ -1,5 +1,5 @@
 const mongoose = require("mongoose")
-const User = require("../models/entities/user")
+const User = require("./entities/user")
 
 class UserModel {
         static getAllUsers = async() => {
@@ -25,7 +25,7 @@ class UserModel {
 
         static getUserByEmail = async(userEmail) => {
             try{
-                const user = await User.findOne({ userEmail })
+                const user = await User.findOne({ email: userEmail })
                 return user
             }catch(e){
                 throw new Error(`Error, el usuario no pudo encontrarse por email ${e}`)
