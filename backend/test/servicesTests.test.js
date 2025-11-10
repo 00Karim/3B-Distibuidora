@@ -14,7 +14,7 @@ const {
 } = require("@jest/globals");
 
 // IMPORTACION DE FUNCIONES PARA CREAR OBJETOS DE DISTINTAS CLASES
-const { createTempCategory } = require("../test/modelTestingSetup") 
+const { createTempCategory, createTempAddress } = require("../test/modelTestingSetup") 
 
 //IMPORTACION DE LOS SERVICES A PROBAR
 const ProductServices = require("../services/productServices")
@@ -26,7 +26,8 @@ const OrderServices = require("../services/orderServices")
 const PackageType = require("../models/enums/PackageType");
 const RoleType = require("../models/enums/RoleType");
 const DeliveryType = require("../models/enums/DeliveryType");
-const MeasurementUnit = require("../models/enums/MeasurementUnit")
+const MeasurementUnit = require("../models/enums/MeasurementUnit");
+const UserModel = require("../models/user.model");
 
 // IMPORTACION DE LAS FUNCIONES PARA CONTROLAS EL CICLO DE VIDA DE LA MEMORIA DE LAS TESTS
 
@@ -105,6 +106,45 @@ describe("Pruebas de integracion con la BDD de los services de Product", () => {
     });
 })
 
-describe("Pruebas de integracion con BDD de los services de Product", () => {
-    
+describe("Pruebas de integracion con BDD de los services de User", () => {
+        let baseData = {}
+    beforeEach(() => { // hacemos que cada vez que empieze un test de User se cree un diccionario con el formato de user 
+        baseData = Object.freeze({
+            email: "usuario@gmail.com",
+            password: "1234567",
+            name: "Elusuario",
+            role: RoleType.EMPLOYEE
+        });
+    });
+
+    const build = (overrides = {}) => ({ ...baseData, ...overrides }); // con esta funcion podemos crear nuevos diccionarios iguales al de arriba, pero sacando o modificando el parametro que querramos. Ademas, la funcion nos devuelve un diciconario nuevo, asi que las tests mantienen el aislamiento
+    it("Chequea que de error si se ingresa un email no valido", async () => {
+        const dataConMailErroneo = build( {...build(), email: "hola.gmail.com"})
+        await expect(UserServices.create(dataConMailErroneo)).rejects.toThrow("Email invalido")
+    })
+    it("Chequea que de error si se ingresa un email que ya fue usado en otro usuario en create", async () => {
+        await UserModel.createUser(build())
+        await expect(UserServices.create(build())).rejects.toThrow("El email ya ha sido utilizado")
+    })
+    it("Chequea que de error si se ingresa una contrasenia con menos de 6 caracteres en create", async () => {
+        await expect(UserServices.create(build({...build(), password: "123"}))).rejects.toThrow("La contrasenia debe tener al menos 6 caracteres")
+    })
+    it("Chequea que de error si se ingresa un rol invalido en create", async () => {
+        await expect(UserServices.create(build({...build(), role: "Jefe"}))).rejects.toThrow("Rol inválido")
+    })
+    it("Chequea que de error si se ingresa un id no valido en update", async () => {
+        await expect(UserServices.update("id_123", build())).rejects.toThrow("ID inválido")
+    })
+    it("Chequea que de error si no se ingresan datos para actualizar", async () => {
+        await expect(UserServices.update("507f1f77bcf86cd799439011", {})).rejects.toThrow("No se enviaron campos para actualizar")
+    })
+    it("Chequea que de error si se ingresa un email no valido en update", async () => {
+        await expect(UserServices.update("507f1f77bcf86cd799439011", build({...build, email: "elmail.com"}))).rejects.toThrow("Email inválido")
+    })
+    it("Chequea que de error si se ingresa una contrasenia con menos de 6 caracteres en update", async () => {
+        await expect(UserServices.update("507f1f77bcf86cd799439011" ,build({...build(), password: "123"}))).rejects.toThrow("La contraseña debe tener al menos 6 caracteres")
+    })
+    it("Chequea que de error si se ingresa un rol invalido en create", async () => {
+        await expect(UserServices.update("507f1f77bcf86cd799439011", build({...build(), role: "Jefe"}))).rejects.toThrow("Rol inválido")
+    })
 })
