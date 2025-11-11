@@ -5,7 +5,7 @@ const itemSchema = new mongoose.Schema({
     product: {type: Product.schema, required: true},
     pricePerUnit: {type: Number},
     // deduction: {type: Number, min: 0, max: 0.99, default: null},
-    totalPrice: {type: Number, min: 0, required: true},
+    totalPrice: {type: Number, min: 0, required: true}, // puede representar precio por kilo o precio por unidad
     amount: {type: Number, default: 1, min: 1},
     weight: {type: Number, min: 0},
     isAvailable: {type: Boolean, required: true},
