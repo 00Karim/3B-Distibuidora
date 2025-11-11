@@ -40,7 +40,7 @@ const createTempItem = async () => {
     const product = await createTempProduct();
     const item = {
         product,
-        totalPrice: 2400,
+        totalPrice: 24000,
         amount: 2,
         weight: 2,
         isAvailable: true,

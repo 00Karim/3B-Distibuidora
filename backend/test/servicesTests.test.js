@@ -14,7 +14,7 @@ const {
 } = require("@jest/globals");
 
 // IMPORTACION DE FUNCIONES PARA CREAR OBJETOS DE DISTINTAS CLASES
-const { createTempCategory, createTempAddress, createTempProduct } = require("../test/modelTestingSetup") 
+const { createTempCategory, createTempProduct, createTempUser, createTempItem, createTempClient, createTempPackaging } = require("../test/modelTestingSetup") 
 
 //IMPORTACION DE MODELS PARA SOPORTE
 const UserModel = require("../models/user.model");
@@ -32,6 +32,7 @@ const PackageType = require("../models/enums/PackageType");
 const RoleType = require("../models/enums/RoleType");
 const DeliveryType = require("../models/enums/DeliveryType");
 const MeasurementUnit = require("../models/enums/MeasurementUnit");
+const StatusType = require("../models/enums/StatusType")
 
 // IMPORTACION DE LAS FUNCIONES PARA CONTROLAS EL CICLO DE VIDA DE LA MEMORIA DE LAS TESTS
 
@@ -128,7 +129,7 @@ describe("Pruebas de integracion con BDD de los services de User", () => {
         expect(userEncontrado.email).toBe("usuario@gmail.com")
     })
     it("Chequea que de error si se ingresa un email no valido", async () => {
-        const dataConMailErroneo = build( {...build(), email: "hola.gmail.com"})
+        const dataConMailErroneo = build( {email: "hola.gmail.com"})
         await expect(UserServices.create(dataConMailErroneo)).rejects.toThrow("Email invalido")
     })
     it("Chequea que de error si se ingresa un email que ya fue usado en otro usuario en create", async () => {
@@ -136,10 +137,10 @@ describe("Pruebas de integracion con BDD de los services de User", () => {
         await expect(UserServices.create(build())).rejects.toThrow("El email ya ha sido utilizado")
     })
     it("Chequea que de error si se ingresa una contrasenia con menos de 6 caracteres en create", async () => {
-        await expect(UserServices.create(build({...build(), password: "123"}))).rejects.toThrow("La contrasenia debe tener al menos 6 caracteres")
+        await expect(UserServices.create(build({password: "123"}))).rejects.toThrow("La contrasenia debe tener al menos 6 caracteres")
     })
     it("Chequea que de error si se ingresa un rol invalido en create", async () => {
-        await expect(UserServices.create(build({...build(), role: "Jefe"}))).rejects.toThrow("Rol inválido")
+        await expect(UserServices.create(build({role: "Jefe"}))).rejects.toThrow("Rol inválido")
     })
     it("Chequea que de error si se ingresa un id no valido en update", async () => {
         await expect(UserServices.update("id_123", build())).rejects.toThrow("ID inválido")
@@ -149,13 +150,13 @@ describe("Pruebas de integracion con BDD de los services de User", () => {
         await expect(UserServices.update("507f1f77bcf86cd799439011", {})).rejects.toThrow("No se enviaron campos para actualizar")
     })
     it("Chequea que de error si se ingresa un email no valido en update", async () => {
-        await expect(UserServices.update("507f1f77bcf86cd799439011", build({...build, email: "elmail.com"}))).rejects.toThrow("Email inválido")
+        await expect(UserServices.update("507f1f77bcf86cd799439011", build({email: "elmail.com"}))).rejects.toThrow("Email inválido")
     })
     it("Chequea que de error si se ingresa una contrasenia con menos de 6 caracteres en update", async () => {
-        await expect(UserServices.update("507f1f77bcf86cd799439011" ,build({...build(), password: "123"}))).rejects.toThrow("La contraseña debe tener al menos 6 caracteres")
+        await expect(UserServices.update("507f1f77bcf86cd799439011" ,build({password: "123"}))).rejects.toThrow("La contraseña debe tener al menos 6 caracteres")
     })
     it("Chequea que de error si se ingresa un rol invalido en create", async () => {
-        await expect(UserServices.update("507f1f77bcf86cd799439011", build({...build(), role: "Jefe"}))).rejects.toThrow("Rol inválido")
+        await expect(UserServices.update("507f1f77bcf86cd799439011", build({role: "Jefe"}))).rejects.toThrow("Rol inválido")
     })
     it("Chequea que de error si se ingresa un id invalido en delete", async () => {
         await expect(UserServices.delete("id_12345")).rejects.toThrow("ID invalido")
@@ -220,10 +221,7 @@ describe("Pruebas de integracion con BDD de los services de Item", () => {
         const res = await ItemServices.create(data);
         expect(res).toMatchObject({ totalPrice: 200, weight: 2.5 });
     });
-    // #####################################################
-    // #####################################################
-    // #####################################################
-    // #####################################################
+
     it("Chequea que de error si se ingresa un product inexistente en update", async () => {
         const oldItem = await ItemServices.create(build());
         const fakeId = new mongoose.Types.ObjectId().toString();
@@ -354,5 +352,114 @@ describe("Pruebas de integracion con BDD de los services de Item", () => {
             weight: 2.5,
             totalPrice: 200,
         });
+    });
+})
+
+describe("Pruebas de integracion con BDD de los services de Order", () => {
+    let baseData
+    beforeEach( async () => { // hacemos que cada vez que empieze un test de Item se cree un diccionario con los atributos de Item 
+        const item1 = await createTempItem()
+        const item2 = await createTempItem()
+        const user = await createTempUser()
+        const client = await createTempClient()    
+        const packaging = await createTempPackaging()
+
+        baseData = Object.freeze({
+            items: [item1, item2],
+            user: user._id,
+            assignedEmployees: [user],
+            total: 96000,
+            status: StatusType.IN_PROGRESS,
+            date: Date.now(),
+            delivery: DeliveryType.OUTER_CITY,
+            client: client,
+            remarks: "Re piola",
+            packaging: packaging
+        });
+
+    });
+    const build = (overrides = {}) => ({ ...baseData, ...overrides }); // con esta funcion podemos crear nuevos diccionarios iguales al de arriba, pero sacando o modificando el parametro que querramos. Ademas, la funcion nos devuelve un diciconario nuevo, asi que las tests mantienen el aislamiento
+
+    it("Chequea que de error si no se ingresa un user en create", async () => {
+        await expect(OrderServices.create(build({ user: undefined}))).rejects.toThrow("Error, el usuario es obligatorio")
+    })
+    it("Chequea que de error si no se ingresa un client en create", async () => {
+        await expect(OrderServices.create(build({ client: undefined}))).rejects.toThrow("Error, el cliente es obligatorio")
+    })
+    it("Chequea que de error si el array de items esta vacio en create", async () => {
+        await expect(OrderServices.create(build({ items: []}))).rejects.toThrow("Debe enviarse al menos un item en el pedido, es obligatorio")
+    })
+    it("Chequea que de error si el id de user es invalido", async () => {
+        await expect(OrderServices.create(build({ user: "id_123"}))).rejects.toThrow("El ID del usuario es invalido")
+    })
+    it("Chequea que de error si el user no existe en la db en create", async () => {
+        const newUser = await createTempUser()
+        await UserModel.deleteUser(newUser._id)
+        await expect(OrderServices.create(build({ user: newUser._id}))).rejects.toThrow("Error, no se encontro el usuario indicado")
+    })
+    it("Chequea que de error si el status es invalido en create", async () => {
+        await expect(OrderServices.create(build({ status: "ESTADO" }))).rejects.toThrow("Estado invalido");
+    });
+
+    it("Chequea que de error si el delivery es invalido en create", async () => {
+        await expect(OrderServices.create(build({ delivery: "DELIVERY_YENDO"}))).rejects.toThrow("Tipo de entrega invalido");
+    });
+
+    it("Chequea que de error si un item no tiene product en create", async () => {
+        // hacemos que items tenga un item solo con el atributo amount
+        await expect(OrderServices.create(build({items: [{amount: 1}]}))).rejects.toThrow("Error, cada item debe tener un producto");
+    });
+
+    it("Chequea que de error si el product._id de un item no existe en create", async () => {
+        const newProduct = await createTempProduct()
+        const newItem = await createTempItem()
+        // creamos un id que no representa ningun documento y se lo asignamos a un producto
+        const fakeId = new mongoose.Types.ObjectId().toString();
+        newProduct._id = fakeId
+        // le asignamos ese producto a un item
+        newItem.product = newProduct
+
+        await expect(OrderServices.create(build({items: [newItem]}))).rejects.toThrow("Producto referenciado en items no existe");
+    });
+
+    it("Chequea que de error si no se envía amount>0 ni weight>0 en create", async () => {
+        const newItem = await createTempItem()
+        newItem.amount = undefined
+        newItem.weight = undefined
+
+        await expect(OrderServices.create(build({items: [newItem]}))).rejects.toThrow("Se tiene que ingresar un peso o una cantidad de unidades");
+    });
+
+    it("Chequea que de error si amount < 1", async () => {
+        const newItem = await createTempItem();
+        newItem.weight = undefined
+        newItem.amount = 0
+
+        await expect(OrderServices.create(build({items: [newItem]}))).rejects.toThrow();
+    });
+
+    it("Chequea que de error si no hay stock suficiente (amount > stock)", async () => {
+        const newItem = await createTempItem()
+        newItem.amount = 4
+        newItem.weight = undefined
+        // creamos un producto con y le damos un stock insuficiente para el amount en item
+        const newProduct = await createTempProduct();
+        await ProductModel.updateProduct(newProduct._id, { stock: 1 }); // lo tenemos que hacer directamente a la db porque dentro de order services se vuelve a asignar el producto haciendo un get a la coleccion Products
+        // asignamos este product al item y cambiamos el precio total del item
+        newItem.product = newProduct
+        newItem.totalPrice = 48000
+        await expect(OrderServices.create(build({items: [newItem]}))).rejects.toThrow(`Stock (cantidad) insuficiente para el producto ${newProduct._id}`);
+    });
+    it("Chequea que de error si no hay stock suficiente (weight > stock)", async () => {
+        const newItem = await createTempItem()
+        newItem.weight = 4
+        newItem.amount = undefined
+        // creamos un producto con y le damos un stock insuficiente para el weight en item
+        const newProduct = await createTempProduct();
+        await ProductModel.updateProduct(newProduct._id, { stock: 1 }); // lo tenemos que hacer directamente a la db porque dentro de order services se vuelve a asignar el producto haciendo un get a la coleccion Products
+        // asignamos ese producto al item y cambiamos el precio total del item
+        newItem.product = newProduct
+        newItem.totalPrice = 48000
+        await expect(OrderServices.create(build({items: [newItem]}))).rejects.toThrow(`Stock (peso) insuficiente para el producto ${newProduct._id}`);
     });
 })
