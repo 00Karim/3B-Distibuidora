@@ -1,5 +1,5 @@
 const mongoose = require("mongoose")
-const orderModel = require("../models/product.model")
+const orderModel = require("../models/order.model")
 const Product = require("../models/entities/product")
 const User = require("../models/entities/user")
 const Client = require("../models/entities/client")
@@ -53,8 +53,8 @@ class orderService {
     static create = async(data = {}) => {
         try{
             //Validaciones basicas de campos obligatorios
-            if(!data.user) throw new Error(`Error, el usuario es obligatorio`)
-            if(!data.client) throw new Error(`Error, el cliente es obligatorio`)
+            if (!data.user) throw new Error(`Error, el usuario es obligatorio`)
+            if (!data.client) throw new Error(`Error, el cliente es obligatorio`)
             if (!data.items || !Array.isArray(data.items) || data.items.length === 0) {
                 throw new Error("Debe enviarse al menos un item en el pedido, es obligatorio")
             }
@@ -81,6 +81,7 @@ class orderService {
             //Validacion de los productos en cada item
             let computedTotal = 0 //Calculo del total de los items
             const processedItems = []
+            console.log(`ITEM CRUDO EN ORDER SERVICE: ${JSON.stringify(data)}`)
             for(const rawItem of data.items){
                 if(!rawItem.product) throw new Error(`Error, cada item debe tener un producto`)
                 let product = null
@@ -90,32 +91,51 @@ class orderService {
                     product = await Product.findById(rawItem.product._id)
                     if (!product) throw new Error("Producto referenciado en items no existe")
                 }
-
-                const amount = this._sanitizeNumber(rawItem.amount) ?? 1 // si no existe una amount entonces se defaultea a 1
-                if (amount < 1) throw new Error("La cantidad de un item debe ser >= 1")
                 
-                //Se chequea el precio unitario del producto en el item
+                //Se chequea el precio unitario del producto en el item TODO: Esto lo hace mongoose automaticamente asi que nunca se llegaria a esta etapa en realidad
                 const unitPrice = Number(product.price ?? 0)
                 if (Number.isNaN(unitPrice) || !Number.isFinite(unitPrice) || unitPrice < 0) {
-                  throw new Error("Precio unitario incorrecto para un producto en items")
+                    throw new Error("Precio unitario incorrecto para un producto en items")
                 }
 
-                //Recalculo del precio por item y el subtotal
-                const totalPrice = unitPrice * amount
-                computedTotal += totalPrice
-
-                // Chequeo del stock del producto, si no hay suficiente stock para efectuar una venta entonces no se puede efectuar la venta
-                if (product && typeof product.stock === "number" && product.stock < amount) {
-                  throw new Error(`Stock insuficiente para el producto ${product._id || product.name}`)
+                //Recalculo del precio por item y el subtotal y sanitizacion de los valores de weight o amount
+                // Ademas, despues de validar la amount o el weight chequeamos si hay sotck suficiente para proveerlo
+                let amount // declaramos estas variables afuera del scope de los ifs para poder usarlas mas adelantes en otros chequeos
+                let weight
+                let totalPrice
+                if (rawItem.amount){
+                    if (amount < 1) throw new Error("La cantidad de un item debe ser >= 1")
+                    amount = this._sanitizeNumber(rawItem.amount)
+                    totalPrice = unitPrice * amount
+                    computedTotal += totalPrice
+                    console.log(`STOCK DEL PRODUCTO: ${product.stock} CANTIDAD DEL PEDIDO: ${amount}`)
+                    if (product.stock < amount) {
+                        throw new Error(`Stock (cantidad) insuficiente para el producto ${product._id || product.name}`)
+                    }
                 }
+                else if(rawItem.weight){
+                    if (weight < 1) throw new Error("El peso de un item debe ser >= 1")
+                    weight = this._sanitizeNumber(rawItem.weight) 
+                    totalPrice = unitPrice * weight
+                    computedTotal += totalPrice
+                    console.log(`STOCK DEL PRODUCTO: ${product.stock} PESO DEL PEDIDO: ${weight}`)
+                    if (product.stock < weight) {
+                        throw new Error(`Stock (peso) insuficiente para el producto ${product._id || product.name}`)
+                    }
+                }
+                else{
+                    throw new Error("Se tiene que ingresar un peso o una cantidad de unidades")
+                }
+
+                
 
                 // Construccion del Item normalizado, la idea es no confiar en client para enviar a la DB
                 processedItems.push({
-                    product: rawItem.product._id,
+                    product: rawItem.product,
                     amount,
                     totalPrice,
                     weight: rawItem.weight,
-                    isAvailable: rawItem.isAvailable === undefined ? (liveProduct ? !!liveProduct.inStock : true) : !!rawItem.isAvailable,
+                    isAvailable: rawItem.isAvailable === undefined ? (product ? !!product.inStock : true) : !!rawItem.isAvailable,
                     remarks: rawItem.remarks
                 })
             }
@@ -137,7 +157,7 @@ class orderService {
             const createdOrder = await orderModel.createOrder(orderPayload)
             return createdOrder
             } catch (e) {
-            throw new Error(`Error en el create de Order, ${e}`)
+                throw new Error(`Error en el create de Order, ${e}`)
             }
     }
 
