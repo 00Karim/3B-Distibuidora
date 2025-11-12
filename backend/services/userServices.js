@@ -1,7 +1,7 @@
 const mongoose = require("mongoose")
 const bcrypt = require("bcrypt") // para hashear contrasenias
 const UserModel = require("../models/user.model")
-const RoleType = require("../enums/RoleType")
+const RoleType = require("../models/enums/RoleType")
 
 const ALLOWED_USER_UPDATE = ["name", "email", "password", "role"]
 
@@ -58,7 +58,8 @@ class userService {
             }
 
             //Comprobacion de email duplicado
-            const existingEmail = await userModel.getUserByEmail(data.email) 
+            const existingEmail = await UserModel.getUserByEmail(data.email) 
+            console.log("MAIL ENCONTRADO: ", existingEmail)
             if(existingEmail) throw new Error("El email ya ha sido utilizado")
             
             const name = this._sanitizeString(data.name, 50)
@@ -115,14 +116,14 @@ class userService {
 
             if (payload.password) {
                 if (String(payload.password).length < 6) {
-                throw new Error("La contraseña debe tener al menos 6 caracteres")
+                    throw new Error("La contraseña debe tener al menos 6 caracteres")
                 }
                 payload.password = await this._hashPassword(payload.password)
             }
 
             if (payload.role) {
                 if (!Object.values(RoleType).includes(payload.role)) {
-                throw new Error("Rol inválido")
+                    throw new Error("Rol inválido")
                 }
             }
 
@@ -131,7 +132,7 @@ class userService {
 
             return updatedUser
         } catch (e) {
-        throw new Error(`Error en el servicio de User update, ${e}`)
+            throw new Error(`Error en el servicio de User update, ${e}`)
         }
     }
 

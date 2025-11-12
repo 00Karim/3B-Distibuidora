@@ -1,16 +1,14 @@
 const mongoose = require("mongoose");
-const {
-    connectTestDB,
-    disconnectTestDB,
-    clearTestDB,
-} = require("./testDBSetup"); // importamos las funciones para conectarnos a la db en memoria, desconectarnos y borrar toda la data
+
+//IMPORTACION DE FUNCIONES PARA CONTROLAR EL CICLO DE VIDA DE LAS TESTS
+require("./testLifeCycleFunctions") // esta es una importacion con efectos secundarios, cuando lo importamos tambien ejecuta el codigo adentro
+                                    // por lo que aunque no lo estemos viendo, beforeAll (conectarnos a la db en memoria), afterAll (desconectarnos) 
+                                    // y afterEach (reiniciar la db --> borrar toda la data = pruebas aisladas entre si) se definen aca
+
 const {
     describe,
     it,
-    expect,
-    beforeAll,
-    afterAll,
-    afterEach,
+    expect
 } = require("@jest/globals");
 // it define una instancia de un test singular, por ejemplo: crear un producto
 // describe sirve para agrupar tests, como una funcion ponele
@@ -35,9 +33,6 @@ const {
 // funciones vamos a crear todo lo que sea necesario para una clase dentro de la misma
 // prueba
 
-//IMPORTACION DE LAS ENTIDADES NECESARIAS
-const Product = require("../models/entities/product"); // importo Product para poder asignar un producto al atributo product de item
-
 //IMPORTACION DE LOS MODELOS A PROBAR:
 const ProductModel = require("../models/product.model");
 const CategoryModel = require("../models/category.model");
@@ -53,18 +48,9 @@ const PackageType = require("../models/enums/PackageType");
 const RoleType = require("../models/enums/RoleType");
 const DeliveryType = require("../models/enums/DeliveryType.js");
 
-beforeAll(async () => {
-    await connectTestDB();
-});
-afterAll(async () => {
-    await disconnectTestDB();
-});
-afterEach(async () => {
-    await clearTestDB();
-});
 
 // --PRUEBAS CATEGORY--
-describe("Pruebas de integracion con BDD del modelo de mongoose de Category ", () => {
+describe("Pruebas de integracion con BDD en memoria del modelo de mongoose de Category ", () => {
     it("Chequea si se puede crear una categoria", async () => {
         const category = {
             name: "Frutos Secos",
@@ -106,7 +92,7 @@ describe("Pruebas de integracion con BDD del modelo de mongoose de Category ", (
 });
 
 // --PRUEBAS DE PRODUCT--
-describe("Pruebas de integracion con BDD del modelo de mongoose de Product ", () => {
+describe("Pruebas de integracion con BDD en memoria del modelo de mongoose de Product ", () => {
     it("Chequea si se puede crear un producto", async () => {
         const category = await createTempCategory()
         const categories = [category._id, category._id] 
@@ -155,7 +141,7 @@ describe("Pruebas de integracion con BDD del modelo de mongoose de Product ", ()
     });
 });
 // --PRUEBAS ADDRESS--
-describe("Pruebas de integracion con BDD del modelo de mongoose Address", () => {
+describe("Pruebas de integracion con BDD en memoria del modelo de mongoose Address", () => {
     it("Chequea si se puede crear una address", async () => {
         const address = {
             street: "Av. Libertador",
@@ -176,7 +162,7 @@ describe("Pruebas de integracion con BDD del modelo de mongoose Address", () => 
     // })
 });
 // --PRUEBAS PACKAGINGTYPE--
-describe("Pruebas de integracion con BDD del modelo de mongoose de PackagingType ", () => {
+describe("Pruebas de integracion con BDD en memoria del modelo de mongoose de PackagingType ", () => {
     it("Chequea si se puede crear un packagingType", async () => {
         const packaging = {
             package: PackageType.BAG, // valor dentro del enum
@@ -211,7 +197,7 @@ describe("Pruebas de integracion con BDD del modelo de mongoose de PackagingType
     });
 });
 // --PRUEBAS CLIENT--
-describe("Pruebas de integracion con BDD del modelo de mongoose de Client ", () => {
+describe("Pruebas de integracion con BDD en memoria del modelo de mongoose de Client ", () => {
     it("Chequea si se puede crear un Cliente", async () => {
         const address = await createTempAddress() 
 
@@ -236,7 +222,7 @@ describe("Pruebas de integracion con BDD del modelo de mongoose de Client ", () 
 });
 
 // --PRUEBAS ITEM--
-describe("Pruebas de integracion con BDD del modelo de mongoose Item ", () => {
+describe("Pruebas de integracion con BDD en memoria del modelo de mongoose Item ", () => {
     it("Chequea si se puede crear un Item", async () => {
         const product = await createTempProduct()
         const item = {
@@ -284,7 +270,7 @@ describe("Pruebas de integracion con BDD del modelo de mongoose Item ", () => {
 });
 
 // --PRUEBAS DE USER--
-describe("Pruebas de integracion con BDD del modelo de mongoose de User ", () => {
+describe("Pruebas de integracion con BDD en memoria del modelo de mongoose de User ", () => {
     it("Chequea si se puede crear un user", async () => {
         const user = {
             "email": "juan.perez@example.com",
@@ -315,7 +301,7 @@ describe("Pruebas de integracion con BDD del modelo de mongoose de User ", () =>
 })
 
 // --PRUEBAS DE ORDER--
-describe("Pruebas de integracion con BDD del modelo de mongoose de Order ", () => {
+describe("Pruebas de integracion con BDD en memoria del modelo de mongoose de Order ", () => {
     it("Chequea si se puede crear una Order", async () => {
         const item1 = await createTempItem()
         const item2 = await createTempItem()

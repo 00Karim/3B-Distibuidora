@@ -13,6 +13,7 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "bcrypt": "^6.0.0",
     "cors": "^2.8.5",
     "express": "^5.1.0",
     "mongoose": "^8.18.2"
@@ -22,6 +23,6 @@
     "mongodb-memory-server": "^10.2.1"
   },
   "jest": {
-    "maxWorkers": "1" 
+    "maxWorkers": "1"
   }
 }
