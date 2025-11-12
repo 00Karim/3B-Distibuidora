@@ -1,0 +1,83 @@
+.carousel {
+  position: relative;
+}
+
+/* Alto del carrusel */
+.carousel__swiper {
+  height: 300px;
+}
+
+/* Slide wrapper para efectos*/
+.carousel__slide {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+/* Imagen recortada sin deformación */
+.carousel img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  object-position: center;
+}
+
+/* Overlay centrado con texto */
+.carousel__overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+
+  color: #fff;
+  padding: 1rem;
+
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.25),
+    rgba(0, 0, 0, 0.25)
+  );
+}
+
+.carousel__title {
+  /* font-size: 2rem; */
+  margin: 0 0 0.5rem;
+  line-height: 1.1;
+  text-shadow: 0 3px 2px rgba(0, 0, 0, 0.4);
+}
+
+.carousel__subtitle {
+  color: white;
+  font-size: 1.1rem;
+  margin: 1rem;
+  max-width: 900px;
+  text-shadow: 0 3px 2px rgba(0, 0, 0, 0.35);
+}
+
+.carousel__button {
+  background-color: #b60000;
+  color: white;
+  border: none;
+  padding: 0.5rem 4rem;
+  margin-top: 3rem;
+  border-radius: 0.3rem;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  transition: transform 0.2s ease;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .carousel__swiper {
+    height: 220px;
+  }
+  .carousel__title {
+    font-size: 1.4rem;
+  }
+  .carousel__subtitle {
+    font-size: 0.95rem;
+  }
+}
