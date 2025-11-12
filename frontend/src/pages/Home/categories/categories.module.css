@@ -1,0 +1,36 @@
+.categories__container {
+  background-color: white;
+  color: black;
+  text-align: center;
+  padding: 3rem;
+}
+
+.categories__container h2 {
+  margin-bottom: 2rem;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(120px, 1fr));
+  gap: 3rem;
+  margin: 0 10rem 0rem 10rem;
+}
+
+.card {
+  color: rgb(0, 0, 0);
+  padding: 1rem;
+  margin-top: 1rem;
+  background: #ffffff;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  transition: transform 0.2s ease;
+  border: rgb(221, 228, 18) solid 1px;
+  border-radius: 0.5rem;
+}
+
+.card__button {
+  background-color: #b60000;
+  color: white;
+  border: none;
+  padding: 0.3rem 3rem;
+  border-radius: 0.3rem;
+}

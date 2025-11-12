@@ -1,0 +1,47 @@
+main {
+  padding: 1px;
+  background-color: #b60000;
+}
+.contact__container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3rem;
+  margin: 5rem 1rem 15rem 10em;
+  padding: 2rem;
+  background-color: white;
+  color: black;
+}
+
+.contactForm__container input {
+  width: 100%;
+  box-sizing: border-box;
+  display: block;
+  margin-bottom: 1rem;
+  border: 1.5px solid #b60000;
+}
+
+.contactForm__container textarea {
+  width: 100%;
+  height: 7rem;
+  box-sizing: border-box;
+  display: block;
+  margin-bottom: 1rem;
+  border: 1.5px solid #b60000;
+}
+
+.contactForm__container input::placeholder,
+textarea::placeholder {
+  color: #b60000;
+}
+
+.contactForm__container button {
+  color: white;
+  background-color: #b60000;
+  padding: 0.5rem 1rem;
+  border: none;
+}
+
+ul {
+  list-style: none;
+  padding-left: 0;
+}
