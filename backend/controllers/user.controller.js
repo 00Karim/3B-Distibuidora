@@ -1,7 +1,7 @@
 const userService = require("../services/userServices")
 
 class LocalUserController {
-    handleGetAllUsers = async(res) => {
+    handleGetAllUsers = async(req, res) => {
         try{
             const users = await userService.getAll()
             return res.status(200).json(users)
@@ -37,7 +37,7 @@ class LocalUserController {
             if(e.message.includes("contrasenia")){ 
                 return res.status(400).json({error: e.message})
             }
-            if(e.message.includes("rol")){ 
+            if(e.message.includes("Rol")){ 
                 return res.status(409).json({error: e.message})
             }
             
@@ -45,18 +45,24 @@ class LocalUserController {
         }
     }
 
-    handleDeleteUser = async(req, res) => {
-        try{
-            const user = await userService.delete(req.params.id)
-            return res.status(200).json(user)
-        }catch(e){
-            if(e.message.includes("no encontrado invalido")){ 
-                return res.status(404).json({error: e.message})
+    handleDeleteUser = async (req, res) => {
+        try {
+            const user = await userService.delete(req.params.id);
+            return res.status(200).json(user);
+        } catch (e) {
+            const msg = e.message.toLowerCase();
+
+            if (msg.includes("id invalido")) {
+                return res.status(400).json({ error: e.message });
             }
-            
-            return res.status(500).json({error: "Error interno del servidor"})
+
+            if (msg.includes("usuario no encontrado")) {
+                return res.status(404).json({ error: e.message });
+            }
+
+            return res.status(500).json({ error: "Error interno del servidor" });
         }
-    }
+    };
 }
 
-module.exports = LocalUserController
+module.exports = new LocalUserController()

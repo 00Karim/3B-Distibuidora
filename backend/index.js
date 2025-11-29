@@ -1,15 +1,16 @@
-import express from "express"
-import cors from "cors"
-import { connectDB } from "./server.js"
+const express = require("express");
+const cors = require("cors");
+const connectDB = require("./server.js");
+const rutas = require("./routes/index.js");
 
 connectDB()
 
-const router = express.Router()
+
 const app = express()
 
 app.use(express.json()) // parsea el json para que sea legible y lo convierte en el objeto req.body
 
-app.use("/api", router);
+app.use("/api", rutas);
 
 const PORT = process.env.PORT || 4000
 app.listen(PORT, () => console.log(`Server corriendo en http://localhost:${PORT}`))

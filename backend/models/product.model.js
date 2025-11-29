@@ -20,11 +20,8 @@ class productModel {
             if(filters.category){//Filtro por categoria
                 query.category = filters.category;
             }
-            if(filters.glutenFree){//Filtro por libre de gluten si o no
-                query.glutenFree = true
-            }
-            else{
-                query.glutenFree = false
+            if(typeof filters.glutenFree === "boolean"){//Filtro por libre de gluten si o no
+                query.glutenFree = filters.glutenFree;
             }
             if(filters.brand){
                 query.brand = filters.brand

@@ -3,7 +3,7 @@ const OrderService = require("../services/orderServices")
 class LocalOrderController {
     handleGetAllOrders = async(req, res) => {
         try{
-            const orders = OrderService.getAll(req.params.filters)
+            const orders = await OrderService.getAll(req.params.filters)
             return res.status(200).json(orders)
         }catch(e){
             return res.status(500).json("Error interno del servidor")
@@ -12,7 +12,7 @@ class LocalOrderController {
 
     handleGetOrderById = async(req, res) => {
         try{
-            const order = OrderService.getById(req.params.id)
+            const order = await OrderService.getById(req.params.id)
             return res.status(200).json(order)
         }catch(e){
             if(e.message.includes("encontrado")) return res.status(404).json({error: e.message})
@@ -26,6 +26,7 @@ class LocalOrderController {
             const order = await OrderService.create(req.body)
             return res.status(201).json(order)
         }catch(e){
+            console.error(e) // ponelo un rato para ver el error real
             if(e.message.includes("obligatorio" || "invalido" || "cada item")) 
                 return res.status(400).json({error: e.error})
             if(e.message.includes("encontro" || "producto referenciado")) 
@@ -71,4 +72,4 @@ class LocalOrderController {
     }
 }
 
-module.exports = LocalOrderController
+module.exports = new LocalOrderController()
