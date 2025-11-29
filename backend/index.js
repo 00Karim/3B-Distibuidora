@@ -11,8 +11,11 @@ app.use(express.json()) // parsea el json para que sea legible y lo convierte en
 
 app.use("/api", router);
 
-const PORT = process.env.PORT || 4000
-app.listen(PORT, () => console.log(`Server corriendo en http://localhost:${PORT}`))
+const PORT = process.env.PORT || 4000;
+
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`Server corriendo en http://localhost:${PORT}`);
+});
 // Users
 // app.use("/users/api/products", cors({ origin: "http://localhost:3000", methods: ["GET"] }));
 
