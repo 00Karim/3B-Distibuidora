@@ -22,7 +22,7 @@ class LocalItemController {
 
     handleCreateItem = async(req, res) => {
         try{
-            const item = ItemServices.create(req.body)
+            const item = await ItemServices.create(req.body)
             return res.status(201).json(item)
         }catch(e){
             if(e.message.includes("obligatorio")) return res.status(404).json({error: e.message})
@@ -31,15 +31,25 @@ class LocalItemController {
         }
     }
 
-    handleUpdateItem = async(req, res) => {
-        try{
-            const {oldItem, newItem} = req.body
+    handleUpdateItem = async (req, res) => {
+        try {
+            const oldItem = req.body.oldItem
+            const newItem = req.body.newItem
+
             const item = await ItemServices.update(oldItem, newItem)
             return res.status(200).json(item)
-        }catch(e){
-            if(e.message.includes("obligatorio")) return res.status(404).json({error: e.message})
-            if(e.message.includes("correcto")) return res.status(400).json({error: e.message})
-            return res.status(500).json("Error interno del servidor")
+        } catch (e) {
+            console.error("[handleUpdateItem] ERROR:", e) 
+
+            if (e.message.includes("obligatorio")) {
+                return res.status(404).json({ error: e.message })
+            }
+
+            if (e.message.includes("correcto")) {
+                return res.status(400).json({ error: e.message })
+            }
+
+            return res.status(500).json({ error: e.message })
         }
     }
 
@@ -57,4 +67,4 @@ class LocalItemController {
     // }
 }
 
-module.exports = LocalItemController
+module.exports = new LocalItemController()

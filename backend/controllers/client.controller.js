@@ -13,7 +13,7 @@ class LocalClientController {
 
     handleCreateClient = async(req, res) => {
         try{
-            client = await ClientModel.createClient(req.body)
+            const client = await ClientModel.createClient(req.body)
             return res.status(200).json(client)
         }catch(e){
             return res.status(500).json({error: "Error interno del servidor"})
@@ -21,4 +21,4 @@ class LocalClientController {
     }
 }
 
-module.exports = LocalClientController
+module.exports = new LocalClientController()

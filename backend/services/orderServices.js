@@ -35,7 +35,7 @@ class orderService {
             const orders = await orderModel.getAllOrders(filters)
             return orders
         }catch(e){
-            throw new Error(`Error de servicio en getAll Order, ${e}`)
+            throw e
         }
     }
 
@@ -46,7 +46,7 @@ class orderService {
             if(!order) throw new Error(`Error, pedido no encontrado`)
             return order
         }catch(e){
-            throw new Error(`Error de servicio en getById Order, ${e}`)
+            throw e
         }
     }
 
@@ -61,6 +61,7 @@ class orderService {
             if (!data.date) data.date = new Date()
 
             //Validacion existencia del usuario
+            console.log(data.user)
             if(!this._isValidObjectId(data.user)) throw new Error(`El ID del usuario es invalido`)
             const user = await User.findById(data.user) 
             if(!user) throw new Error(`Error, no se encontro el usuario indicado`)

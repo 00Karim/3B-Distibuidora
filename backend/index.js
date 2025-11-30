@@ -1,3 +1,5 @@
+
+const rutas = require("./routes/index.js");
 import express from "express"
 import dotenv from "dotenv"
 import cors from "cors"
@@ -27,7 +29,7 @@ const corsOptions = {
 
 connectDB()
 
-const router = express.Router()
+
 const app = express()
 
 // middleware de CORS:
@@ -38,7 +40,7 @@ app.use(cors(corsOptions));
 
 app.use(express.json()) // parsea el json para que sea legible y lo convierte en el objeto req.body
 
-app.use("/api", router);
+app.use("/api", rutas);
 
 const PORT = process.env.PORT || 4000;
 

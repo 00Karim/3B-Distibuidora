@@ -40,7 +40,7 @@ class OrderModel {
                 throw new Error(`Error, Id del pedido invalido`)
             
             const order = await Order.findById(orderId).populate('assignedEmployees').populate('packaging')
-
+            console.log("ORDER EN MODEL: ", order)
             return order
         }catch(e){
             throw new Error(`Error, no se pudo obtener el pedido indicado, ${e}`)

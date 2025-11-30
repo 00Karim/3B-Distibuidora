@@ -34,7 +34,6 @@ class UserModel {
 
         static createUser = async(userData) => {
             try{
-                console.log("DATA QUE LLEGA AL MODELO DEL USER: ", userData);
                 const newUser = new User(userData)
                 console.log("USUARIO NUEVO CREADO: ", newUser);
                 await newUser.save()

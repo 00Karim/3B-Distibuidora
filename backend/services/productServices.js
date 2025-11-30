@@ -13,7 +13,7 @@ class productService {
 
     static getById = async(productId) => {
         try{
-            const product = await ProductModel.findById(productId)
+            const product = await ProductModel.getProductById(productId)
             if(!product){ // TODO: Esto no chequea nada y hace que el getProduct en el model sea inutil, buscarle una funcion util o eliminar
                 throw new Error(`Error, producto no encontrado`)
             }
@@ -60,7 +60,7 @@ class productService {
 
     static delete = async(_id) => {
         try{
-            if(!id || !mongoose.Types.ObjectId.isValid(_id)) throw new Error(`Error, el id es obligatorio`)
+            if(!_id || !mongoose.Types.ObjectId.isValid(_id)) throw new Error(`Error, el id es obligatorio`)
             const deletedProduct = await ProductModel.deleteProduct(_id)
             return deletedProduct
         }catch(e){
