@@ -1,0 +1,43 @@
+.product__grid {
+  background-color: white;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(20px, 1fr));
+  gap: 1rem;
+  margin: 5rem 5rem 10rem 30rem;
+}
+
+.product__card {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  transition: transform 0.2s ease;
+  border-radius: 0rem 0rem 1rem 1rem;
+}
+
+.card__img {
+  border-radius: 1rem 1rem 0rem 0rem;
+  width: 100%;
+  height: 50%;
+}
+
+.card__content {
+  display: flex;
+}
+
+.card__media {
+  display: flex;
+  flex-direction: column;
+  margin-right: 100px;
+}
+
+.card__text {
+  padding: 0.5rem;
+  background-color: white;
+  color: black;
+}
+
+.glutenfree__img {
+  width: 3rem;
+}
+
+.card__button {
+  margin-top: 3rem;
+}
