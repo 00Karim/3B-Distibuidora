@@ -1,9 +1,10 @@
 
 const rutas = require("./routes/index.js");
-import express from "express"
-import dotenv from "dotenv"
-import cors from "cors"
-import { connectDB } from "./server.js"
+
+const express = require("express");
+const dotenv = require("dotenv");
+const cors = require("cors");
+const { connectDB } = require("./server.js");
 
 dotenv.config()
 

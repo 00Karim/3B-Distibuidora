@@ -1,5 +1,6 @@
 .shop {
   background-color: white;
+  color: black;
 }
 
 .shop h1 {
@@ -8,6 +9,7 @@
   padding: 1rem;
 }
 
-P {
+p {
   color: black;
 }
+

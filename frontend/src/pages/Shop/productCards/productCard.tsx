@@ -43,7 +43,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
                 flexDirection: "column",
             }}
         >
-            {/* Imagen */}
+            {/* immagen */}
             <div
                 style={{
                     width: "100%",
@@ -62,7 +62,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
                 />
             </div>
 
-            {/* Info */}
+            {/* info */}
             <div
                 style={{
                     padding: "10px 12px",
@@ -80,22 +80,16 @@ export const ProductCard: React.FC<ProductCardProps> = ({
 
                 {/* SIN / CON TACC */}
                 <div style={{ marginTop: 4 }}>
-                    {glutenFree ? (
+                    {glutenFree && (
                         <img
-                            src="/icons/sin-tacc.png"
+                            src="/public/icons/sin-tacc.png"
                             alt="Sin TACC"
-                            style={{ width: 42 }}
-                        />
-                    ) : (
-                        <img
-                            src="/icons/con-tacc.png"
-                            alt="Con TACC"
                             style={{ width: 42 }}
                         />
                     )}
                 </div>
 
-                {/* Precio + botón */}
+                {/* precio + botón de comprar */}
                 <div
                     style={{
                         marginTop: 6,
