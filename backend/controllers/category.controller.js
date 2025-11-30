@@ -1,7 +1,7 @@
 const CategoryModel = require("../models/category.model")
 
 class LocalCategoryController {
-    handleGetAllCategories = async(res) => {
+    handleGetAllCategories = async(req, res) => {
         try{
             const categories = await CategoryModel.getAllCategories()
             return res.status(200).json(categories)
@@ -31,13 +31,24 @@ class LocalCategoryController {
 
     handleUpdateCategory = async(req, res) => {
         try{
-            const category = await CategoryModel.updateCategory(req.body)
+            console.log(req.params.id)
+            const category = await CategoryModel.updateCategory(req.params.id, req.body)
             return res.status(200).json(category)
         }catch(e){
             if(e.message.includes("valido")) return res.status(404).json({error: e.message})
             return res.status(500).json("Error interno del servidor")
         }
     }
+
+    handleDeleteCategory = async(req, res) => {
+        try{
+            const category = await CategoryModel.deleteCategory(req.params.id)
+            return res.status(200).json(category)
+        }catch(e){
+            if(e.message.includes("No existe")) return res.status(404).json({error: e.message})
+            return res.status(500).json("Error interno del servidor")
+        }
+    }
 }
 
-module.exports = LocalCategoryController
+module.exports = new LocalCategoryController()
