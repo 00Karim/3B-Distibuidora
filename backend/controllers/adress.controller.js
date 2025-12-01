@@ -13,7 +13,7 @@ class LocalAdressController {
 
     handleCreateAdress = async(req, res) => {
         try{
-            const adress = await AdressModel.createAdress(req.body)
+            const adress = await AdressModel.createAddress(req.body)
             return res.status(201).json(adress)
         }catch(e){
             return res.status(500).json({error: "Error interno del servidor"})
@@ -21,7 +21,7 @@ class LocalAdressController {
     }
 }
 
-module.exports = LocalAdressController
+module.exports = new LocalAdressController()
 
 
 

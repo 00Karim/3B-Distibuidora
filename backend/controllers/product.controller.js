@@ -1,19 +1,25 @@
 const ProductServices = require("../services/productServices")
 
 class LocalProductController {
-    handleGetAllProducts = async(res) => {
-        try{
-            const products = await ProductServices.getAll()
-            return res.status(200).json(products)
-        }catch(e){
-            return res.status(500).json("Error interno del servidor")
+    handleGetAllProducts = async (req, res) => {
+        try {
+            const filters = { ...req.query };
+
+            if (filters.glutenFree === "true") filters.glutenFree = true;
+            else if (filters.glutenFree === "false") filters.glutenFree = false;
+
+            const products = await ProductServices.getAll(filters);
+            return res.status(200).json(products);
+        } catch (e) {
+            console.error(e);
+            return res.status(500).json("Error interno del servidor");
         }
-    }
+    };
 
     handelGetProductById = async(req, res) => {
         try{
             const product = await ProductServices.getById(req.params.id)
-            return res.status(200)
+            return res.status(200).json(product)
         }catch(e){
             if(e.message.includes("encontrado")) return res.status(404).json({error: e.message})
             return res.status(500).json("Error interno del servidor")
@@ -32,7 +38,7 @@ class LocalProductController {
 
     handleUpdateProduct = async(req, res) => {
         try{
-            const product = await ProductServices.update(req.body)
+            const product = await ProductServices.update(req.params.id, req.body)
             return res.status(200).json(product)
         }catch(e){
             if(e.message.includes("id es obligatorio")) return res.status(404).json({error: e.message})
@@ -52,4 +58,4 @@ class LocalProductController {
     }
 }
 
-module.exports = LocalProductController
+module.exports = new LocalProductController()

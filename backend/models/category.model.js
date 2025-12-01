@@ -52,6 +52,25 @@ class CategoryModel{
             throw new Error(`Error, no se pudo actualizar la categoria indicada, ${e}`)
         }
     }
+
+    static deleteCategory = async (idCategory) => {
+        try {
+            if(!mongoose.Types.ObjectId.isValid(idCategory)){
+                throw new Error("Error, el ID no es válido");
+            }
+
+            const deletedCategory = await Category.findByIdAndDelete(idCategory);
+
+            if(!deletedCategory){
+                throw new Error("No existe una categoría con el ID indicado");
+            }
+
+            return deletedCategory;
+
+        } catch(e) {
+            throw new Error(`Error, no se pudo eliminar la categoría indicada, ${e}`);
+        }
+    }
 }
 
 module.exports = CategoryModel 
