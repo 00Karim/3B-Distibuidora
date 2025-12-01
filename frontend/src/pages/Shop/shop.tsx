@@ -12,10 +12,10 @@ interface ApiProduct {
     name: string;
     brand: string;
     price: number;
-    //description: string;
-    //category: Category;
-    //unitOfMeasure: string;
-    //stock: number;
+    description: string;
+    category: Category;
+    unitOfMeasure: string;
+    stock: number;
     image: string;
     glutenFree: boolean;
 }
