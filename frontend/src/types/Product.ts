@@ -1,5 +1,5 @@
 //import type { Category } from './Category'
-import type { UnitOfMeasure } from './UnitOfMeasure'
+//import type { UnitOfMeasure } from './UnitOfMeasure'
 
 export type Product = {
   _id: string;                    
