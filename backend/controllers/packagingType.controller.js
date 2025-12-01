@@ -1,4 +1,4 @@
-const PackagingType = require("../models/packagingtype.model")
+const PackagingType = require("../models/packagingType.model")
 
 class LocalPackagingTypeController {
 
