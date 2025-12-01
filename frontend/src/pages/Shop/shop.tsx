@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { ProductCard } from "./productCards/productCard";
-import styles from "./Shop.module.css";
+import styles from "./shop.module.css";
 
 interface Category {
     name: string;
