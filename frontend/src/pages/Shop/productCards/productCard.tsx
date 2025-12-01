@@ -25,7 +25,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
     description,
     category,
     unitOfMeasure,
-    stock,
+    //stock,
     image,
     glutenFree,
     onAdd,
